@@ -1,0 +1,20 @@
+spring:
+
+  profiles:
+    active: dev
+
+  jpa:
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/booking_system
+    username: postgres
+    password: postgres
+    hikari:
+      schema: booking_schema
+      connection-timeout: 10000
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS booking_schema
+
+
+app:
+  uploading:
+    mockHotelPath:
