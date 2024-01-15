@@ -9,12 +9,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import ru.example.booking.repository.HotelRepository;
 
-@Component
-@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "dev")
+//@Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "dev")
 public class DevListener {
 
-    private final HotelRepository hotelRepository;
+//    private final HotelRepository hotelRepository;
 
     @Value("${app.uploading.mockHotelPath}")
     private String mockHotelPath;
@@ -22,9 +22,9 @@ public class DevListener {
     @EventListener(ApplicationStartedEvent.class)
     @Order(1)
     public void uploadHotel() {
-        if (hotelRepository.count() > 0) {
-            return;
-        }
+//        if (hotelRepository.count() > 0) {
+//            return;
+//        }
 
     }
 }

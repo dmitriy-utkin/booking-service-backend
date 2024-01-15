@@ -1,4 +1,4 @@
-package ru.example.booking.web.hotel;
+package ru.example.booking.web.model.hotel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class HotelResponseList {
 
+    @Builder.Default
     private List<HotelResponse> hotels = new ArrayList<>();
 
 }

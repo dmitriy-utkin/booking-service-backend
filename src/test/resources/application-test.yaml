@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    generate-ddl: true
+  datasource:
+    hikari:
+      schema: booking_schema
+      connection-timeout: 10000
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS booking_schema
+
+
+app:
+  uploading:
+    mockHotelPath:

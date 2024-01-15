@@ -1,4 +1,4 @@
-package ru.example.booking.web.defaults;
+package ru.example.booking.web.model.defaults;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

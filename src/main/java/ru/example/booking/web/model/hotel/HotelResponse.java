@@ -1,4 +1,4 @@
-package ru.example.booking.web.hotel;
+package ru.example.booking.web.model.hotel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateHotelRequest {
+public class HotelResponse {
 
     private String name;
 
@@ -19,6 +19,10 @@ public class UpdateHotelRequest {
 
     private String address;
 
-    private Integer distance;
+    private Float distance;
+
+    private Float rating;
+
+    private Integer numberOfRatings;
 
 }

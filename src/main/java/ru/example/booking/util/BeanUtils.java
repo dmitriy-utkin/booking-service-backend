@@ -9,13 +9,14 @@ import java.lang.reflect.Field;
 public class BeanUtils {
 
     @SneakyThrows
-    public void copyNonNullFields(Object from, Object to) {
+    public static void copyNonNullProperties(Object from, Object to) {
         Class<?> clazz = from.getClass();
-        Field[] fields = clazz.getFields();
+        Field[] fields = clazz.getDeclaredFields();
 
         for (Field f : fields) {
             f.setAccessible(true);
             Object value = f.get(from);
+
             if (value != null) {
                 f.set(to, value);
             }

@@ -2,6 +2,7 @@ package ru.example.booking.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.model.Hotel;
 import ru.example.booking.repository.HotelRepository;
@@ -42,12 +43,16 @@ public class HotelServiceImpl implements HotelService {
         }
 
         Hotel existedHotel = findById(id);
-        BeanUtils.copyNonNullFields(hotel, existedHotel);
+        BeanUtils.copyNonNullProperties(hotel, existedHotel);
+
         return hotelRepository.save(existedHotel);
     }
 
     @Override
     public Hotel save(Hotel hotel) {
+        if (hotelRepository.existsByName(hotel.getName())) {
+            throw new EntityAlreadyExists("Hotel with name \"" + hotel.getName() + "\" is already exists");
+        }
         return hotelRepository.save(hotel);
     }
 

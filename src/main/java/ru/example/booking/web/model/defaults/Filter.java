@@ -1,4 +1,4 @@
-package ru.example.booking.web.defaults;
+package ru.example.booking.web.model.defaults;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ErrorResponse {
-    private String errorMessage;
+public class Filter {
+
+    private String distanceFrom;
+
+    private String distanceTo;
+
+
 }

@@ -7,9 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
-@Entity
-@Table(name = "hotels")
 @Data
+@Entity
+@Table(name = "hotels", uniqueConstraints = {@UniqueConstraint(name = "hotel_name", columnNames = "name")})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,9 +28,9 @@ public class Hotel {
 
     private String address;
 
-    private Integer distance;
+    private Float distance;
 
-    private Integer rating;
+    private Float rating;
 
     @Column(name = "number_of_ratings")
     private Integer numberOfRatings;
