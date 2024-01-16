@@ -56,607 +56,207 @@
     }
   ],
   "rooms": [
-    {
-      "roomName": "Flexidy"
-    },
-    {
-      "roomName": "Sonsing"
-    },
-    {
-      "roomName": "Tempsoft"
-    },
-    {
-      "roomName": "Y-Solowarm"
-    },
-    {
-      "roomName": "Greenlam"
-    },
-    {
-      "roomName": "Tampflex"
-    },
-    {
-      "roomName": "Tres-Zap"
-    },
-    {
-      "roomName": "Toughjoyfax"
-    },
-    {
-      "roomName": "Andalax"
-    },
-    {
-      "roomName": "Span"
-    },
-    {
-      "roomName": "Latlux"
-    },
-    {
-      "roomName": "Ronstring"
-    },
-    {
-      "roomName": "Treeflex"
-    },
-    {
-      "roomName": "Tempsoft"
-    },
-    {
-      "roomName": "Hatity"
-    },
-    {
-      "roomName": "Matsoft"
-    },
-    {
-      "roomName": "Tresom"
-    },
-    {
-      "roomName": "Temp"
-    },
-    {
-      "roomName": "Holdlamis"
-    },
-    {
-      "roomName": "Transcof"
-    },
-    {
-      "roomName": "Sonsing"
-    },
-    {
-      "roomName": "Zontrax"
-    },
-    {
-      "roomName": "Y-Solowarm"
-    },
-    {
-      "roomName": "Daltfresh"
-    },
-    {
-      "roomName": "Stronghold"
-    },
-    {
-      "roomName": "Bitwolf"
-    },
-    {
-      "roomName": "Ronstring"
-    },
-    {
-      "roomName": "It"
-    },
-    {
-      "roomName": "Bigtax"
-    },
-    {
-      "roomName": "Fix San"
-    },
-    {
-      "roomName": "Tresom"
-    },
-    {
-      "roomName": "Konklab"
-    },
-    {
-      "roomName": "Cardguard"
-    },
-    {
-      "roomName": "Home Ing"
-    },
-    {
-      "roomName": "Span"
-    },
-    {
-      "roomName": "Duobam"
-    },
-    {
-      "roomName": "Namfix"
-    },
-    {
-      "roomName": "Job"
-    },
-    {
-      "roomName": "Konklux"
-    },
-    {
-      "roomName": "Toughjoyfax"
-    },
-    {
-      "roomName": "Quo Lux"
-    },
-    {
-      "roomName": "Regrant"
-    },
-    {
-      "roomName": "Bamity"
-    },
-    {
-      "roomName": "Tresom"
-    },
-    {
-      "roomName": "Tampflex"
-    },
-    {
-      "roomName": "Voyatouch"
-    },
-    {
-      "roomName": "Bigtax"
-    },
-    {
-      "roomName": "Daltfresh"
-    },
-    {
-      "roomName": "Aerified"
-    },
-    {
-      "roomName": "Cardguard"
-    },
-    {
-      "roomName": "Zontrax"
-    },
-    {
-      "roomName": "Daltfresh"
-    },
-    {
-      "roomName": "Zathin"
-    },
-    {
-      "roomName": "Prodder"
-    },
-    {
-      "roomName": "Aerified"
-    },
-    {
-      "roomName": "Bitwolf"
-    },
-    {
-      "roomName": "Domainer"
-    },
-    {
-      "roomName": "Duobam"
-    },
-    {
-      "roomName": "Fix San"
-    },
-    {
-      "roomName": "Vagram"
-    },
-    {
-      "roomName": "Quo Lux"
-    },
-    {
-      "roomName": "Fixflex"
-    },
-    {
-      "roomName": "Stringtough"
-    },
-    {
-      "roomName": "Stim"
-    },
-    {
-      "roomName": "Biodex"
-    },
-    {
-      "roomName": "Fixflex"
-    },
-    {
-      "roomName": "Bytecard"
-    },
-    {
-      "roomName": "Sonsing"
-    },
-    {
-      "roomName": "Job"
-    },
-    {
-      "roomName": "Home Ing"
-    },
-    {
-      "roomName": "Transcof"
-    },
-    {
-      "roomName": "Aerified"
-    },
-    {
-      "roomName": "Trippledex"
-    },
-    {
-      "roomName": "Viva"
-    },
-    {
-      "roomName": "Tin"
-    },
-    {
-      "roomName": "Zathin"
-    },
-    {
-      "roomName": "Otcom"
-    },
-    {
-      "roomName": "Veribet"
-    },
-    {
-      "roomName": "Fintone"
-    },
-    {
-      "roomName": "Fix San"
-    },
-    {
-      "roomName": "Fintone"
-    },
-    {
-      "roomName": "Mat Lam Tam"
-    },
-    {
-      "roomName": "Ronstring"
-    },
-    {
-      "roomName": "Stronghold"
-    },
-    {
-      "roomName": "Lotlux"
-    },
-    {
-      "roomName": "Keylex"
-    },
-    {
-      "roomName": "Trippledex"
-    },
-    {
-      "roomName": "Redhold"
-    },
-    {
-      "roomName": "Fixflex"
-    },
-    {
-      "roomName": "Greenlam"
-    },
-    {
-      "roomName": "Keylex"
-    },
-    {
-      "roomName": "Quo Lux"
-    },
-    {
-      "roomName": "Sonair"
-    },
-    {
-      "roomName": "Voyatouch"
-    },
-    {
-      "roomName": "Zaam-Dox"
-    },
-    {
-      "roomName": "Overhold"
-    },
-    {
-      "roomName": "Sonsing"
-    },
-    {
-      "roomName": "Matsoft"
-    },
-    {
-      "roomName": "Duobam"
-    },
-    {
-      "roomName": "Sub-Ex"
-    }
+    "Flexidy",
+    "Sonsing",
+    "Tempsoft",
+    "Y-Solowarm",
+    "Greenlam",
+    "Tampflex",
+    "Tres-Zap",
+    "Toughjoyfax",
+    "Andalax",
+    "Span",
+    "Latlux",
+    "Ronstring",
+    "Treeflex",
+    "Tempsoft",
+    "Hatity",
+    "Matsoft",
+    "Tresom",
+    "Temp",
+    "Holdlamis",
+    "Transcof",
+    "Sonsing",
+    "Zontrax",
+    "Y-Solowarm",
+    "Daltfresh",
+    "Stronghold",
+    "Bitwolf",
+    "Ronstring",
+    "It",
+    "Bigtax",
+    "Fix San",
+    "Tresom",
+    "Konklab",
+    "Cardguard",
+    "Home Ing",
+    "Span",
+    "Duobam",
+    "Namfix",
+    "Job",
+    "Konklux",
+    "Toughjoyfax",
+    "Quo Lux",
+    "Regrant",
+    "Bamity",
+    "Tresom",
+    "Tampflex",
+    "Voyatouch",
+    "Bigtax",
+    "Daltfresh",
+    "Aerified",
+    "Cardguard",
+    "Zontrax",
+    "Daltfresh",
+    "Zathin",
+    "Prodder",
+    "Aerified",
+    "Bitwolf",
+    "Domainer",
+    "Duobam",
+    "Fix San",
+    "Vagram",
+    "Quo Lux",
+    "Fixflex",
+    "Stringtough",
+    "Stim",
+    "Biodex",
+    "Fixflex",
+    "Bytecard",
+    "Sonsing",
+    "Job",
+    "Home Ing",
+    "Transcof",
+    "Aerified",
+    "Trippledex",
+    "Viva",
+    "Tin",
+    "Zathin",
+    "Otcom",
+    "Veribet",
+    "Fintone",
+    "Fix San",
+    "Fintone",
+    "Mat Lam Tam",
+    "Ronstring",
+    "Stronghold",
+    "Lotlux",
+    "Keylex",
+    "Trippledex",
+    "Redhold",
+    "Fixflex",
+    "Greenlam",
+    "Keylex",
+    "Quo Lux",
+    "Sonair",
+    "Voyatouch",
+    "Zaam-Dox",
+    "Overhold",
+    "Sonsing",
+    "Matsoft",
+    "Duobam",
+    "Sub-Ex"
   ],
   "dates": [
-    {
-      "date": "11/10/2024"
-    },
-    {
-      "date": "10/22/2024"
-    },
-    {
-      "date": "8/16/2024"
-    },
-    {
-      "date": "8/29/2024"
-    },
-    {
-      "date": "1/7/2024"
-    },
-    {
-      "date": "5/30/2024"
-    },
-    {
-      "date": "4/22/2024"
-    },
-    {
-      "date": "10/23/2024"
-    },
-    {
-      "date": "12/8/2024"
-    },
-    {
-      "date": "6/25/2024"
-    },
-    {
-      "date": "12/2/2024"
-    },
-    {
-      "date": "2/17/2024"
-    },
-    {
-      "date": "6/24/2024"
-    },
-    {
-      "date": "10/22/2024"
-    },
-    {
-      "date": "8/7/2024"
-    },
-    {
-      "date": "6/16/2024"
-    },
-    {
-      "date": "10/13/2024"
-    },
-    {
-      "date": "2/28/2024"
-    },
-    {
-      "date": "5/22/2024"
-    },
-    {
-      "date": "4/11/2024"
-    },
-    {
-      "date": "2/25/2024"
-    },
-    {
-      "date": "7/12/2024"
-    },
-    {
-      "date": "9/14/2024"
-    },
-    {
-      "date": "10/29/2024"
-    },
-    {
-      "date": "6/27/2024"
-    },
-    {
-      "date": "10/24/2024"
-    },
-    {
-      "date": "6/16/2024"
-    },
-    {
-      "date": "8/3/2024"
-    },
-    {
-      "date": "8/28/2024"
-    },
-    {
-      "date": "1/22/2024"
-    },
-    {
-      "date": "4/12/2024"
-    },
-    {
-      "date": "9/12/2024"
-    },
-    {
-      "date": "10/17/2024"
-    },
-    {
-      "date": "1/11/2024"
-    },
-    {
-      "date": "5/21/2024"
-    },
-    {
-      "date": "11/19/2024"
-    },
-    {
-      "date": "6/7/2024"
-    },
-    {
-      "date": "11/4/2024"
-    },
-    {
-      "date": "12/13/2024"
-    },
-    {
-      "date": "1/18/2024"
-    },
-    {
-      "date": "5/15/2024"
-    },
-    {
-      "date": "7/8/2024"
-    },
-    {
-      "date": "5/11/2024"
-    },
-    {
-      "date": "7/9/2024"
-    },
-    {
-      "date": "9/27/2024"
-    },
-    {
-      "date": "7/9/2024"
-    },
-    {
-      "date": "2/15/2024"
-    },
-    {
-      "date": "8/28/2024"
-    },
-    {
-      "date": "3/25/2024"
-    },
-    {
-      "date": "4/27/2024"
-    },
-    {
-      "date": "10/3/2024"
-    },
-    {
-      "date": "4/5/2024"
-    },
-    {
-      "date": "10/11/2024"
-    },
-    {
-      "date": "7/25/2024"
-    },
-    {
-      "date": "5/20/2024"
-    },
-    {
-      "date": "2/28/2024"
-    },
-    {
-      "date": "11/9/2024"
-    },
-    {
-      "date": "12/29/2024"
-    },
-    {
-      "date": "9/2/2024"
-    },
-    {
-      "date": "6/8/2024"
-    },
-    {
-      "date": "2/17/2024"
-    },
-    {
-      "date": "4/7/2024"
-    },
-    {
-      "date": "1/10/2024"
-    },
-    {
-      "date": "5/2/2024"
-    },
-    {
-      "date": "4/16/2024"
-    },
-    {
-      "date": "11/12/2024"
-    },
-    {
-      "date": "3/15/2024"
-    },
-    {
-      "date": "6/28/2024"
-    },
-    {
-      "date": "2/20/2024"
-    },
-    {
-      "date": "2/10/2024"
-    },
-    {
-      "date": "10/9/2024"
-    },
-    {
-      "date": "6/22/2024"
-    },
-    {
-      "date": "6/20/2024"
-    },
-    {
-      "date": "4/25/2024"
-    },
-    {
-      "date": "11/6/2024"
-    },
-    {
-      "date": "1/20/2024"
-    },
-    {
-      "date": "1/21/2024"
-    },
-    {
-      "date": "5/8/2024"
-    },
-    {
-      "date": "9/28/2024"
-    },
-    {
-      "date": "6/30/2024"
-    },
-    {
-      "date": "6/9/2024"
-    },
-    {
-      "date": "8/27/2024"
-    },
-    {
-      "date": "7/4/2024"
-    },
-    {
-      "date": "4/15/2024"
-    },
-    {
-      "date": "6/23/2024"
-    },
-    {
-      "date": "11/28/2024"
-    },
-    {
-      "date": "4/22/2024"
-    },
-    {
-      "date": "4/20/2024"
-    },
-    {
-      "date": "8/8/2024"
-    },
-    {
-      "date": "5/26/2024"
-    },
-    {
-      "date": "3/23/2024"
-    },
-    {
-      "date": "3/20/2024"
-    },
-    {
-      "date": "4/25/2024"
-    },
-    {
-      "date": "4/30/2024"
-    },
-    {
-      "date": "9/20/2024"
-    },
-    {
-      "date": "11/29/2024"
-    },
-    {
-      "date": "9/11/2024"
-    },
-    {
-      "date": "1/2/2024"
-    },
-    {
-      "date": "3/21/2024"
-    },
-    {
-      "date": "7/6/2024"
-    }
+    "11/10/2024",
+    "10/22/2024",
+    "8/16/2024",
+    "8/29/2024",
+    "1/7/2024",
+    "5/30/2024",
+    "4/22/2024",
+    "10/23/2024",
+    "12/8/2024",
+    "6/25/2024",
+    "12/2/2024",
+    "2/17/2024",
+    "6/24/2024",
+    "10/22/2024",
+    "8/7/2024",
+    "6/16/2024",
+    "10/13/2024",
+    "2/28/2024",
+    "5/22/2024",
+    "4/11/2024",
+    "2/25/2024",
+    "7/12/2024",
+    "9/14/2024",
+    "10/29/2024",
+    "6/27/2024",
+    "10/24/2024",
+    "6/16/2024",
+    "8/3/2024",
+    "8/28/2024",
+    "1/22/2024",
+    "4/12/2024",
+    "9/12/2024",
+    "10/17/2024",
+    "1/11/2024",
+    "5/21/2024",
+    "11/19/2024",
+    "6/7/2024",
+    "11/4/2024",
+    "12/13/2024",
+    "1/18/2024",
+    "5/15/2024",
+    "7/8/2024",
+    "5/11/2024",
+    "7/9/2024",
+    "9/27/2024",
+    "7/9/2024",
+    "2/15/2024",
+    "8/28/2024",
+    "3/25/2024",
+    "4/27/2024",
+    "10/3/2024",
+    "4/5/2024",
+    "10/11/2024",
+    "7/25/2024",
+    "5/20/2024",
+    "2/28/2024",
+    "11/9/2024",
+    "12/29/2024",
+    "9/2/2024",
+    "6/8/2024",
+    "2/17/2024",
+    "4/7/2024",
+    "1/10/2024",
+    "5/2/2024",
+    "4/16/2024",
+    "11/12/2024",
+    "3/15/2024",
+    "6/28/2024",
+    "2/20/2024",
+    "2/10/2024",
+    "10/9/2024",
+    "6/22/2024",
+    "6/20/2024",
+    "4/25/2024",
+    "11/6/2024",
+    "1/20/2024",
+    "1/21/2024",
+    "5/8/2024",
+    "9/28/2024",
+    "6/30/2024",
+    "6/9/2024",
+    "8/27/2024",
+    "7/4/2024",
+    "4/15/2024",
+    "6/23/2024",
+    "11/28/2024",
+    "4/22/2024",
+    "4/20/2024",
+    "8/8/2024",
+    "5/26/2024",
+    "3/23/2024",
+    "3/20/2024",
+    "4/25/2024",
+    "4/30/2024",
+    "9/20/2024",
+    "11/29/2024",
+    "9/11/2024",
+    "1/2/2024",
+    "3/21/2024",
+    "7/6/2024"
   ]
 }

@@ -45,7 +45,7 @@ public class HotelController {
                                                 @Valid @RequestBody UpdateHotelRequest request) {
         return ResponseEntity.ok(
                 hotelMapper.hotelToResponse(
-                        hotelService.update(id, hotelMapper.updateRequestToHotel(request))
+                        hotelService.updateById(id, hotelMapper.updateRequestToHotel(request))
                 )
         );
     }

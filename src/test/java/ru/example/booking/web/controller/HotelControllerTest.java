@@ -1,9 +1,7 @@
 package ru.example.booking.web.controller;
 
-import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
 import net.javacrumbs.jsonunit.JsonAssert;
@@ -12,15 +10,13 @@ import ru.example.booking.web.model.defaults.ErrorResponse;
 import ru.example.booking.web.model.hotel.CreateHotelRequest;
 import ru.example.booking.web.model.hotel.UpdateHotelRequest;
 
-import java.util.stream.Stream;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
-public class HotelControllerMainTest extends HotelAbstractTest {
+public class HotelControllerTest extends HotelAbstractTest {
 
     @Test
     public void whenFindHotelById_thenReturnHotel() throws Exception {
@@ -63,6 +59,7 @@ public class HotelControllerMainTest extends HotelAbstractTest {
                 .build();
 
         var expectedResponse = hotelMapper.hotelToResponse(hotelMapper.createRequestToHotel(createRequest));
+        expectedResponse.setId(6L);
 
         var actualResponse = mockMvc.perform(post("/api/hotel")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -353,7 +350,7 @@ public class HotelControllerMainTest extends HotelAbstractTest {
     }
 
     @ParameterizedTest
-    @MethodSource("invalidStringValues")
+    @MethodSource("invalidInputStringsTwoValues")
     public void whenSaveHotelWithIncorrectHeadlineLength_thenReturnValidationError(String headline) throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -384,7 +381,7 @@ public class HotelControllerMainTest extends HotelAbstractTest {
     }
 
     @ParameterizedTest
-    @MethodSource("invalidStringValues")
+    @MethodSource("invalidInputStringsTwoValues")
     public void whenSaveHotelWithIncorrectNameLength_thenReturnValidationError(String name) throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -415,7 +412,7 @@ public class HotelControllerMainTest extends HotelAbstractTest {
     }
 
     @ParameterizedTest
-    @MethodSource("invalidStringValues")
+    @MethodSource("invalidInputStringsTwoValues")
     public void whenSaveHotelWithIncorrectCityLength_thenReturnValidationError(String city) throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -446,7 +443,7 @@ public class HotelControllerMainTest extends HotelAbstractTest {
     }
 
     @ParameterizedTest
-    @MethodSource("invalidStringValues")
+    @MethodSource("invalidInputStringsTwoValues")
     public void whenSaveHotelWithIncorrectAddressLength_thenReturnValidationError(String address) throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -473,13 +470,6 @@ public class HotelControllerMainTest extends HotelAbstractTest {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
         JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
-    }
-
-    private static Stream<Arguments> invalidStringValues() {
-        return Stream.of(
-                Arguments.of(RandomString.make(1)),
-                Arguments.of(RandomString.make(161))
-        );
     }
 
 }

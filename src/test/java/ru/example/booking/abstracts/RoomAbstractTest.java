@@ -2,15 +2,15 @@ package ru.example.booking.abstracts;
 
 import org.junit.jupiter.api.BeforeEach;
 
-public class HotelAbstractTest extends AbstractMainTest {
+public class RoomAbstractTest extends AbstractMainTest {
 
     @BeforeEach
     public void beforeEach() {
 
         resetSequence();
 
-        for (int i = 1; i <= 5; i++) {
-            hotelService.save(createDefaultHotel(i));
-        }
+        createDefaultRoomList(true).forEach(
+                roomService::save
+        );
     }
 }

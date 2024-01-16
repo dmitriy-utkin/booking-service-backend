@@ -1,11 +1,11 @@
 package ru.example.booking.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -34,5 +34,10 @@ public class Hotel {
 
     @Column(name = "number_of_ratings")
     private Integer numberOfRatings;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @Builder.Default
+    private List<Room> rooms = new ArrayList<>();
 
 }

@@ -1,5 +1,5 @@
 package ru.example.booking.model;
 
-public enum RoomType {
+public enum RoomDescription {
     STANDARD, SUPERIOR, SUITE, PRESIDENT
 }

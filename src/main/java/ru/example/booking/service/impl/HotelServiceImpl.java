@@ -37,7 +37,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Hotel update(Long id, Hotel hotel) {
+    public Hotel updateById(Long id, Hotel hotel) {
         if (!hotelRepository.existsById(id)) {
             throw new EntityNotFoundException("Hotel not found, ID is " + id);
         }
