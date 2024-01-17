@@ -18,4 +18,7 @@ public interface RoomService {
 
     void deleteById(Long id);
 
+    Room addBookedDates(Long roomId, String from, String to);
+
+    Room deleteBookedDates(Long roomId, String from, String to);
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
+import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.web.model.defaults.ErrorResponse;
 
 import java.util.List;
@@ -34,5 +35,10 @@ public class ExceptionHandlerController {
                 .toList();
         String error = String.join("; ", allErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(error));
+    }
+
+    @ExceptionHandler(RoomBookingException.class)
+    public ResponseEntity<ErrorResponse> bookingException(RoomBookingException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
 }

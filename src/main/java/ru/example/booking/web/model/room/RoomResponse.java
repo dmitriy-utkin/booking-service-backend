@@ -8,7 +8,7 @@ import ru.example.booking.model.Hotel;
 import ru.example.booking.model.RoomDescription;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,5 +33,5 @@ public class RoomResponse {
     private Integer capacity;
 
     @Builder.Default
-    private Set<Date> bookedDates = new HashSet<>();
+    private Set<LocalDate> bookedDates = new HashSet<>();
 }

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +41,6 @@ public class Room {
     private Integer capacity;
 
     @Builder.Default
-    private Set<Date> bookedDates = new HashSet<>();
+    private Set<LocalDate> bookedDates = new HashSet<>();
 
 }

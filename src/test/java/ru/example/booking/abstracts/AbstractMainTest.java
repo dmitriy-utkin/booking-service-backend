@@ -33,9 +33,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @ExtendWith(SpringExtension.class)
@@ -177,6 +179,18 @@ public class AbstractMainTest {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected Room createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription description) {
+        int  roomNum = (int) (roomRepository.count() + 1);
+        var room = createDefaultRoomWithoutBookedDates(roomNum, description, true);
+        Set<LocalDate> dates = Set.of(
+                LocalDate.now(),
+                LocalDate.now().plusDays(1)
+        );
+
+        room.setBookedDates(dates);
+        return room;
     }
 
 }
