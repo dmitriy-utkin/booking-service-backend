@@ -13,4 +13,6 @@ public class Application {
 	//TODO: описать данное приложение в docker, чтобы потом запускать его в виде контейнера
 	//TODO: описать приложение в openAPI
 
+	//TODO: реализовать isAvailableDates method in Room interface
+
 }

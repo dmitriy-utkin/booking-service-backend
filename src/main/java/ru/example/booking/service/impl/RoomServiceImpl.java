@@ -76,6 +76,21 @@ public class RoomServiceImpl implements RoomService {
     public Room addBookedDates(Long roomId, String from, String to) {
         Room existedRoom = findById(roomId);
         Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
+
+        var start = strDateToLocalDate(from);
+        var end = strDateToLocalDate(to);
+
+        Set<LocalDate> preparedDates = prepareDate(existedDates, start, end, false);
+        existedDates.addAll(preparedDates);
+        existedRoom.setBookedDates(existedDates);
+        return existedRoom;
+    }
+
+    @Override
+    public Room addBookedDates(Long roomId, LocalDate from, LocalDate to) {
+        Room existedRoom = findById(roomId);
+        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
+
         Set<LocalDate> preparedDates = prepareDate(existedDates, from, to, false);
         existedDates.addAll(preparedDates);
         existedRoom.setBookedDates(existedDates);
@@ -86,25 +101,39 @@ public class RoomServiceImpl implements RoomService {
     public Room deleteBookedDates(Long roomId, String from, String to) {
         Room existedRoom = findById(roomId);
         Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
+
+        var start = strDateToLocalDate(from);
+        var end = strDateToLocalDate(to);
+
+        Set<LocalDate> preparedDates = prepareDate(existedDates, start, end, true);
+        existedDates.removeAll(preparedDates);
+        existedRoom.setBookedDates(existedDates);
+        return existedRoom;
+    }
+
+    @Override
+    public Room deleteBookedDates(Long roomId, LocalDate from, LocalDate to) {
+        Room existedRoom = findById(roomId);
+        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
+
         Set<LocalDate> preparedDates = prepareDate(existedDates, from, to, true);
         existedDates.removeAll(preparedDates);
         existedRoom.setBookedDates(existedDates);
         return existedRoom;
     }
 
-    private Set<LocalDate> prepareDate(Set<LocalDate> currentDates, String from, String to, boolean removing) {
-
+    private LocalDate strDateToLocalDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
 
-        LocalDate start;
-        LocalDate end;
-
         try {
-            start = LocalDate.parse(from, formatter);
-            end = LocalDate.parse(to, formatter);
+            return LocalDate.parse(date, formatter);
         } catch (DateTimeParseException e) {
             throw new RoomBookingException("Input dates is incorrect");
         }
+    }
+
+    private Set<LocalDate> prepareDate(Set<LocalDate> currentDates, LocalDate start, LocalDate end, boolean removing) {
+
 
         Map<Boolean, String> preValidation = preValidateDates(start, end);
 
