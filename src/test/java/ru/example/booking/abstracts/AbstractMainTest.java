@@ -20,13 +20,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import ru.example.booking.mapper.HotelMapper;
 import ru.example.booking.mapper.RoomMapper;
-import ru.example.booking.model.Hotel;
-import ru.example.booking.model.Room;
-import ru.example.booking.model.RoomDescription;
+import ru.example.booking.mapper.UserMapper;
+import ru.example.booking.model.*;
 import ru.example.booking.repository.HotelRepository;
 import ru.example.booking.repository.RoomRepository;
+import ru.example.booking.repository.UserRepository;
 import ru.example.booking.service.HotelService;
 import ru.example.booking.service.RoomService;
+import ru.example.booking.service.UserService;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -64,6 +65,15 @@ public class AbstractMainTest {
     protected RoomRepository roomRepository;
 
     @Autowired
+    protected UserService userService;
+
+    @Autowired
+    protected UserRepository userRepository;
+
+    @Autowired
+    protected UserMapper userMapper;
+
+    @Autowired
     protected MockMvc mockMvc;
 
     @Autowired
@@ -94,6 +104,7 @@ public class AbstractMainTest {
     public void afterEach() {
         roomRepository.deleteAll();
         hotelRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     private static Stream<Arguments> invalidInputStringsTwoValues() {
@@ -101,6 +112,38 @@ public class AbstractMainTest {
                 Arguments.of(RandomString.make(1)),
                 Arguments.of(RandomString.make(161))
         );
+    }
+
+    protected List<User> createDefaultUserList(int roleUserCount, int roleAdminCount) {
+        int count = 1;
+        List<User> users = new ArrayList<>();
+        for (int i = 1; i <= roleUserCount; i++) {
+            users.add(createUserWithUserRole(count));
+            count++;
+        }
+        for (int i = 1; i <= roleAdminCount; i++) {
+            users.add(createUserWithAdminRole(count));
+            count++;
+        }
+        return users;
+    }
+
+    protected User createUserWithUserRole(int userNum) {
+        return createDefaultUser(userNum, RoleType.ROLE_USER);
+    }
+
+    protected User createUserWithAdminRole(int userNum) {
+        return createDefaultUser(userNum, RoleType.ROLE_ADMIN);
+    }
+
+    protected User createDefaultUser(int userNum, RoleType role) {
+        return User.builder()
+                .id((long) userNum)
+                .username("user" + userNum)
+                .email("user" + userNum + "@email.com")
+                .password("pass")
+                .roles(Set.of(role))
+                .build();
     }
 
     protected Hotel createDefaultHotel(int hotelNum) {
@@ -173,6 +216,7 @@ public class AbstractMainTest {
             try (Statement statement = connection.createStatement()) {
                 statement.execute("ALTER SEQUENCE booking_schema.rooms_id_seq RESTART WITH 1;");
                 statement.execute("ALTER SEQUENCE booking_schema.hotels_id_seq RESTART WITH 1;");
+                statement.execute("ALTER SEQUENCE booking_schema.users_id_seq RESTART WITH 1;");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

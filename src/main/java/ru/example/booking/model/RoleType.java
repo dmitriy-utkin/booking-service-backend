@@ -1,5 +1,5 @@
 package ru.example.booking.model;
 
 public enum RoleType {
-    USER, ADMIN
+    ROLE_USER, ROLE_ADMIN
 }

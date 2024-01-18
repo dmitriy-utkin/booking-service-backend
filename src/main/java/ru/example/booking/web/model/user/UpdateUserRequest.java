@@ -21,5 +21,5 @@ public class UpdateUserRequest {
 
     private String email;
 
-    private Set<RoleType> roles = new HashSet<>();
+    private Set<RoleType> roles;
 }

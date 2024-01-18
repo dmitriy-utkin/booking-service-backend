@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.example.booking.model.RoleType;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -23,5 +22,5 @@ public class UserResponse {
 
     private String email;
 
-    private Set<RoleType> roles = new HashSet<>();
+    private Set<RoleType> roles;
 }
