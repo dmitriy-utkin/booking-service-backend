@@ -6,14 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.mapper.UserMapper;
 import ru.example.booking.model.RoleType;
-import ru.example.booking.model.User;
 import ru.example.booking.service.UserService;
 import ru.example.booking.web.model.user.CreateUserRequest;
 import ru.example.booking.web.model.user.UpdateUserRequest;
 import ru.example.booking.web.model.user.UserResponse;
 import ru.example.booking.web.model.user.UserResponseList;
-
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/user")

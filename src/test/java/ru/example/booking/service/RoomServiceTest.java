@@ -73,7 +73,7 @@ public class RoomServiceTest extends RoomAbstractTest {
 
         var savedRoom = roomService.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
 
-        var expectedResult = new ErrorResponse("Dates is incorrect: This date/s is not booked");
+        var expectedResult = new ErrorResponse("This date/s is not booked");
 
         ErrorResponse actualResult = new ErrorResponse();
 
@@ -95,7 +95,7 @@ public class RoomServiceTest extends RoomAbstractTest {
 
         var savedRoom = roomService.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
 
-        var expectedResult = new ErrorResponse("Dates is incorrect: This dates is unavailable");
+        var expectedResult = new ErrorResponse("This dates is unavailable");
 
         ErrorResponse actualResult = new ErrorResponse();
 
@@ -129,5 +129,59 @@ public class RoomServiceTest extends RoomAbstractTest {
         }
 
         JsonAssert.assertJsonEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void whenCheckForAvailabilityDates_thenReturnTrue() {
+
+        var datesToBeChecked = roomService.getDateList(LocalDate.now(), LocalDate.now().plusDays(10));
+
+        var existedDates = roomService.getDateList(LocalDate.now().plusDays(11),
+                LocalDate.now().plusDays(15));
+
+        var actualResult = roomService.isAvailableDates(existedDates, datesToBeChecked);
+
+        JsonAssert.assertJsonEquals(true, actualResult);
+    }
+
+    @Test
+    public void whenCheckForAvailabilityDates_thenReturnFalse() {
+
+        var datesToBeChecked = roomService.getDateList(LocalDate.now(), LocalDate.now().plusDays(10));
+
+        var existedDates = roomService.getDateList(LocalDate.now().plusDays(9),
+                LocalDate.now().plusDays(15));
+
+        var actualResult = roomService.isAvailableDates(existedDates, datesToBeChecked);
+
+        JsonAssert.assertJsonEquals(false, actualResult);
+    }
+
+    @Test
+    public void whenCheckIsBookedDates_thenReturnTrue() {
+
+        var datesToBeChecked = roomService.getDateList(LocalDate.now().plusDays(9),
+                LocalDate.now().plusDays(10));
+
+        var existedDates = roomService.getDateList(LocalDate.now().plusDays(5),
+                LocalDate.now().plusDays(12));
+
+        var actualResult = roomService.isBookedDates(existedDates, datesToBeChecked);
+
+        JsonAssert.assertJsonEquals(true, actualResult);
+    }
+
+    @Test
+    public void whenCheckIsBookedDates_thenReturnFalse() {
+
+        var datesToBeChecked = roomService.getDateList(LocalDate.now().plusDays(9),
+                LocalDate.now().plusDays(15));
+
+        var existedDates = roomService.getDateList(LocalDate.now(),
+                LocalDate.now().plusDays(12));
+
+        var actualResult = roomService.isBookedDates(existedDates, datesToBeChecked);
+
+        JsonAssert.assertJsonEquals(false, actualResult);
     }
 }

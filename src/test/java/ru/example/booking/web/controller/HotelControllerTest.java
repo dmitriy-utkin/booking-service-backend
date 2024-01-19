@@ -1,20 +1,17 @@
 package ru.example.booking.web.controller;
 
+import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
-import net.javacrumbs.jsonunit.JsonAssert;
 import ru.example.booking.abstracts.HotelAbstractTest;
 import ru.example.booking.web.model.defaults.ErrorResponse;
 import ru.example.booking.web.model.hotel.CreateHotelRequest;
 import ru.example.booking.web.model.hotel.UpdateHotelRequest;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 public class HotelControllerTest extends HotelAbstractTest {
 

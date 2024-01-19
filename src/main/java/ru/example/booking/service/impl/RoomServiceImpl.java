@@ -75,13 +75,23 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room addBookedDates(Long roomId, String from, String to) {
         Room existedRoom = findById(roomId);
-        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
 
         var start = strDateToLocalDate(from);
         var end = strDateToLocalDate(to);
 
-        Set<LocalDate> preparedDates = prepareDate(existedDates, start, end, false);
-        existedDates.addAll(preparedDates);
+        Map<Boolean, String> preValidation = preValidateDates(start, end);
+        if (preValidation.containsKey(false)) {
+            throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
+        }
+
+        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
+        Set<LocalDate> datesToBeChecked = new TreeSet<>(getDateList(start, end));
+
+        if (!isAvailableDates(existedDates, datesToBeChecked)) {
+            throw new RoomBookingException("This dates is unavailable");
+        }
+
+        existedDates.addAll(datesToBeChecked);
         existedRoom.setBookedDates(existedDates);
         return existedRoom;
     }
@@ -89,10 +99,20 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room addBookedDates(Long roomId, LocalDate from, LocalDate to) {
         Room existedRoom = findById(roomId);
-        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
 
-        Set<LocalDate> preparedDates = prepareDate(existedDates, from, to, false);
-        existedDates.addAll(preparedDates);
+        Map<Boolean, String> preValidation = preValidateDates(from, to);
+        if (preValidation.containsKey(false)) {
+            throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
+        }
+
+        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
+        Set<LocalDate> datesToBeChecked = new TreeSet<>(getDateList(from, to));
+
+        if (!isAvailableDates(existedDates, datesToBeChecked)) {
+            throw new RoomBookingException("This dates is unavailable");
+        }
+
+        existedDates.addAll(datesToBeChecked);
         existedRoom.setBookedDates(existedDates);
         return existedRoom;
     }
@@ -100,29 +120,60 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room deleteBookedDates(Long roomId, String from, String to) {
         Room existedRoom = findById(roomId);
-        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
 
         var start = strDateToLocalDate(from);
-        var end = strDateToLocalDate(to);
+        var end =  strDateToLocalDate(to);
 
-        Set<LocalDate> preparedDates = prepareDate(existedDates, start, end, true);
-        existedDates.removeAll(preparedDates);
+        Map<Boolean, String> preValidation = preValidateDates(start, end);
+        if (preValidation.containsKey(false)) {
+            throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
+        }
+
+        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
+        Set<LocalDate> datesToBeChecked = getDateList(start, end);
+
+        if (!isBookedDates(existedDates, datesToBeChecked)) {
+            throw new RoomBookingException( "This date/s is not booked");
+        }
+        existedDates.removeAll(datesToBeChecked);
         existedRoom.setBookedDates(existedDates);
+
         return existedRoom;
     }
 
     @Override
     public Room deleteBookedDates(Long roomId, LocalDate from, LocalDate to) {
         Room existedRoom = findById(roomId);
-        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
 
-        Set<LocalDate> preparedDates = prepareDate(existedDates, from, to, true);
-        existedDates.removeAll(preparedDates);
+        Map<Boolean, String> preValidation = preValidateDates(from, to);
+        if (preValidation.containsKey(false)) {
+            throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
+        }
+
+        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
+        Set<LocalDate> datesToBeChecked = getDateList(from, to);
+
+        if (!isBookedDates(existedDates, datesToBeChecked)) {
+            throw new RoomBookingException( "This date/s is not booked");
+        }
+
+        existedDates.removeAll(datesToBeChecked);
         existedRoom.setBookedDates(existedDates);
         return existedRoom;
     }
 
-    private LocalDate strDateToLocalDate(String date) {
+    @Override
+    public boolean isAvailableDates(Set<LocalDate> existedDates, Set<LocalDate> datesToBeChecked) {
+        return datesToBeChecked.stream().noneMatch(existedDates::contains);
+    }
+
+    @Override
+    public boolean isBookedDates(Set<LocalDate> existedDates, Set<LocalDate> datesToBeChecked) {
+        return existedDates.containsAll(datesToBeChecked);
+    }
+
+    @Override
+    public LocalDate strDateToLocalDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
 
         try {
@@ -132,15 +183,8 @@ public class RoomServiceImpl implements RoomService {
         }
     }
 
-    private Set<LocalDate> prepareDate(Set<LocalDate> currentDates, LocalDate start, LocalDate end, boolean removing) {
-
-
-        Map<Boolean, String> preValidation = preValidateDates(start, end);
-
-        if (preValidation.containsKey(false)) {
-            throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
-        }
-
+    @Override
+    public Set<LocalDate> getDateList(LocalDate start, LocalDate end) {
         Set<LocalDate> dates = new HashSet<>();
         int iteration = 0;
 
@@ -149,29 +193,7 @@ public class RoomServiceImpl implements RoomService {
             iteration++;
         } while (!dates.contains(end));
 
-        Map<Boolean, String> postValidation = postValidateDates(dates, currentDates, removing);
-
-        if (postValidation.containsKey(false)) {
-            throw new RoomBookingException("Dates is incorrect: " + postValidation.get(false));
-        }
-
         return dates;
-    }
-
-    private Map<Boolean, String> postValidateDates(Set<LocalDate> newDates,
-                                                   Set<LocalDate> currentDates,
-                                                   boolean removing) {
-        Set<LocalDate> tempSet = new HashSet<>(Set.copyOf(newDates));
-        tempSet.retainAll(currentDates);
-        int initialSize = newDates.size();
-
-        if (!removing && !tempSet.isEmpty()) {
-            return Map.of(false, "This dates is unavailable");
-        }
-        if (removing && tempSet.size() != initialSize) {
-            return Map.of(false, "This date/s is not booked");
-        }
-        return Map.of(true, "OK");
     }
 
     private Map<Boolean, String> preValidateDates(LocalDate start, LocalDate end) {

@@ -19,15 +19,19 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import ru.example.booking.mapper.HotelMapper;
+import ru.example.booking.mapper.ReservationMapper;
 import ru.example.booking.mapper.RoomMapper;
 import ru.example.booking.mapper.UserMapper;
 import ru.example.booking.model.*;
 import ru.example.booking.repository.HotelRepository;
+import ru.example.booking.repository.ReservationRepository;
 import ru.example.booking.repository.RoomRepository;
 import ru.example.booking.repository.UserRepository;
 import ru.example.booking.service.HotelService;
+import ru.example.booking.service.ReservationService;
 import ru.example.booking.service.RoomService;
 import ru.example.booking.service.UserService;
+import ru.example.booking.web.controller.ReservationController;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -81,6 +85,18 @@ public class AbstractMainTest {
 
     @Autowired
     protected HotelMapper hotelMapper;
+
+    @Autowired
+    protected ReservationRepository reservationRepository;
+
+    @Autowired
+    protected ReservationService reservationService;
+
+    @Autowired
+    protected ReservationController reservationController;
+
+    @Autowired
+    protected ReservationMapper reservationMapper;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -217,6 +233,7 @@ public class AbstractMainTest {
                 statement.execute("ALTER SEQUENCE booking_schema.rooms_id_seq RESTART WITH 1;");
                 statement.execute("ALTER SEQUENCE booking_schema.hotels_id_seq RESTART WITH 1;");
                 statement.execute("ALTER SEQUENCE booking_schema.users_id_seq RESTART WITH 1;");
+                statement.execute("ALTER SEQUENCE booking_schema.reservations_id_seq RESTART WITH 1;");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -235,6 +252,40 @@ public class AbstractMainTest {
 
         room.setBookedDates(dates);
         return room;
+    }
+
+    protected List<Reservation> createDefaultReservationListWithStepByCounter(int count, boolean withHotelSaving) {
+        List<Reservation> reservations = new ArrayList<>();
+        for (int i = 1; i <= count; i++) {
+            reservations.add(
+                    createDefaultReservationWithRoomHotelUser(i,
+                            LocalDate.now(),
+                            LocalDate.now().plusDays(i),
+                            withHotelSaving)
+            );
+        }
+        return reservations;
+    }
+
+    protected Reservation createDefaultReservationWithRoomHotelUser(int num,
+                                                                    LocalDate from,
+                                                                    LocalDate to,
+                                                                    boolean withHotelSaving) {
+        var room = roomRepository.save(
+                createDefaultRoomWithoutBookedDates(num, RoomDescription.STANDARD, withHotelSaving)
+        );
+        var user = userRepository.save(createDefaultUser(num, RoleType.ROLE_USER));
+        return createDefaultReservation(num, room, user, from, to);
+    }
+
+    protected Reservation createDefaultReservation(int num, Room room, User user, LocalDate from, LocalDate to) {
+        return Reservation.builder()
+                .id((long) num)
+                .user(user)
+                .room(room)
+                .checkInDate(from)
+                .checkOutDate(to)
+                .build();
     }
 
 }

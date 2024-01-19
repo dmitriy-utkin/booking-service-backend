@@ -1,15 +1,18 @@
 package ru.example.booking.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.model.Reservation;
-import ru.example.booking.model.Room;
 import ru.example.booking.repository.ReservationRepository;
 import ru.example.booking.service.ReservationService;
 import ru.example.booking.service.RoomService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -19,6 +22,9 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
 
     private final RoomService roomService;
+
+    @Value("${app.dateFormat}")
+    private String datePattern;
 
     @Override
     public List<Reservation> findAll() {
@@ -57,6 +63,36 @@ public class ReservationServiceImpl implements ReservationService {
         if (!reservationRepository.existsById(id)) {
             throw new EntityNotFoundException("Reservation is not found, ID is " + id);
         }
-        return null;
+
+        var existedReservation = findById(id);
+        var roomBookedDays = reservation.getRoom().getBookedDates();
+        var newBookingDays = roomService.getDateList(reservation.getCheckInDate(), reservation.getCheckOutDate());
+
+        if (!roomService.isAvailableDates(roomBookedDays, newBookingDays)) {
+            throw new RoomBookingException("This dates is unavailable");
+        }
+
+        roomService.deleteBookedDates(existedReservation.getId(),
+                existedReservation.getCheckInDate(),
+                existedReservation.getCheckOutDate());
+
+        roomService.addBookedDates(reservation.getRoom().getId(),
+                reservation.getCheckInDate(),
+                reservation.getCheckOutDate());
+
+        reservation.setId(id);
+
+        return reservationRepository.save(reservation);
+    }
+
+    @Override
+    public String localDateToStr(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
+
+        try {
+            return date.format(formatter);
+        } catch (DateTimeParseException e) {
+            throw new RoomBookingException("Input dates is incorrect");
+        }
     }
 }

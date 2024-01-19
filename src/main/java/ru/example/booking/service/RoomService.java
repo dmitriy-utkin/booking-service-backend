@@ -4,6 +4,7 @@ import ru.example.booking.model.Room;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public interface RoomService {
 
@@ -27,5 +28,11 @@ public interface RoomService {
 
     Room deleteBookedDates(Long roomId, LocalDate from, LocalDate to);
 
-    boolean isAvailableDates(LocalDate checkInDate, LocalDate checkOutDate);
+    boolean isAvailableDates(Set<LocalDate> existedDates, Set<LocalDate> datesToBeChecked);
+
+    boolean isBookedDates(Set<LocalDate> existedDates, Set<LocalDate> datesToBeChecked);
+
+    LocalDate strDateToLocalDate(String date);
+
+    Set<LocalDate> getDateList(LocalDate start, LocalDate end);
 }
