@@ -3,6 +3,7 @@ package ru.example.booking.web.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.mapper.UserMapper;
 import ru.example.booking.model.RoleType;
@@ -22,6 +23,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseList> findAll() {
         return ResponseEntity.ok(userMapper.userListToResponseList(userService.findAll()));
     }
@@ -37,6 +39,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> save(@RequestParam RoleType role,
                                              @RequestBody CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(

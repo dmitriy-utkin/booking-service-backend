@@ -3,6 +3,8 @@ package ru.example.booking.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.example.booking.aop.Validation;
+import ru.example.booking.aop.ValidationType;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.model.Reservation;
@@ -32,6 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Validation(type = ValidationType.RESERVATION_FIND_BY)
     public Reservation findById(Long id) {
         return reservationRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Reservation is not found, ID is " + id)
@@ -47,6 +50,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Validation(type = ValidationType.RESERVATION_DELETE)
     public void cancel(Long id) {
         if (!reservationRepository.existsById(id)) {
             throw new EntityNotFoundException("Reservation is not found, ID is " + id);
@@ -59,6 +63,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Validation(type = ValidationType.RESERVATION_UPDATE)
     public Reservation update(Long id, Reservation reservation) {
         if (!reservationRepository.existsById(id)) {
             throw new EntityNotFoundException("Reservation is not found, ID is " + id);

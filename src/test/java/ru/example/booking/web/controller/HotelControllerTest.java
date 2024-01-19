@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.example.booking.abstracts.HotelAbstractTest;
 import ru.example.booking.web.model.defaults.ErrorResponse;
 import ru.example.booking.web.model.hotel.CreateHotelRequest;
@@ -16,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class HotelControllerTest extends HotelAbstractTest {
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindHotelById_thenReturnHotel() throws Exception {
 
         var expectedResponse = hotelMapper.hotelToResponse(createDefaultHotel(1));
@@ -30,6 +32,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindAllHotels_thenReturnAllHotels() throws Exception {
         var expectedResponse = hotelMapper.hotelListToResponseList(createDefaultHotelList(5));
 
@@ -43,6 +46,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotel_thenReturnHotelAndIncreaseRepositoryCount() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -71,6 +75,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenUpdateHotelById_thenReturnUpdatedHotelAndNoIncreaseOfRepository() throws Exception {
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
 
@@ -132,6 +137,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenDeleteHotelById_thenReturnNoContentAndDecreaseRepositoryCount() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -148,6 +154,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindHotelByNotExistsId_thenReturnError() throws Exception {
 
         var expectedResponse = new ErrorResponse("Hotel not found, ID is " + 100);
@@ -162,6 +169,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithNullName_thenReturnValidationError() throws Exception {
 
         var createRequest = CreateHotelRequest.builder()
@@ -186,6 +194,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithNullHeadline_thenReturnValidationError() throws Exception {
 
         var createRequest = CreateHotelRequest.builder()
@@ -210,6 +219,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithNullCity_thenReturnValidationError() throws Exception {
 
         var createRequest = CreateHotelRequest.builder()
@@ -234,6 +244,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithNullAddress_thenReturnValidationError() throws Exception {
 
         var createRequest = CreateHotelRequest.builder()
@@ -258,6 +269,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithNullDistance_thenReturnValidationError() throws Exception {
 
         var createRequest = CreateHotelRequest.builder()
@@ -282,6 +294,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenUpdateHotelByNotExistsId_thenReturnError() throws Exception {
 
         var updateRequest = UpdateHotelRequest.builder().name("New hotel name 1").build();
@@ -301,6 +314,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenDeleteHotelByNotExistsId_thenReturnError() throws Exception {
 
         var expectedResponse = new ErrorResponse("Hotel not found, ID is " + 100);
@@ -316,6 +330,7 @@ public class HotelControllerTest extends HotelAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithExistsName_thenReturnException() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -348,6 +363,7 @@ public class HotelControllerTest extends HotelAbstractTest {
 
     @ParameterizedTest
     @MethodSource("invalidInputStringsTwoValues")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithIncorrectHeadlineLength_thenReturnValidationError(String headline) throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -379,6 +395,7 @@ public class HotelControllerTest extends HotelAbstractTest {
 
     @ParameterizedTest
     @MethodSource("invalidInputStringsTwoValues")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithIncorrectNameLength_thenReturnValidationError(String name) throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -410,6 +427,7 @@ public class HotelControllerTest extends HotelAbstractTest {
 
     @ParameterizedTest
     @MethodSource("invalidInputStringsTwoValues")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithIncorrectCityLength_thenReturnValidationError(String city) throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
@@ -441,6 +459,7 @@ public class HotelControllerTest extends HotelAbstractTest {
 
     @ParameterizedTest
     @MethodSource("invalidInputStringsTwoValues")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveHotelWithIncorrectAddressLength_thenReturnValidationError(String address) throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());

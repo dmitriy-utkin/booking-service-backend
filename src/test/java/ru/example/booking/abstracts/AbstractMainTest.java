@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -100,6 +101,9 @@ public class AbstractMainTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @Autowired
+    protected PasswordEncoder passwordEncoder;
 
     protected static PostgreSQLContainer postgreSQLContainer;
 

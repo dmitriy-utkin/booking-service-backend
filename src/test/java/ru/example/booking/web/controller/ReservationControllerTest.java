@@ -3,6 +3,7 @@ package ru.example.booking.web.controller;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.example.booking.abstracts.ReservationAbstractTest;
 import ru.example.booking.web.model.defaults.ErrorResponse;
 import ru.example.booking.web.model.reservation.ReservationResponse;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ReservationControllerTest extends ReservationAbstractTest {
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindAllReservation_thenReturnReservations() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, reservationRepository.count());
@@ -35,6 +37,23 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "user")
+    public void whenFindAllReservationByUser_thenReturnError() throws Exception {
+
+
+        var expectedResponse = new ErrorResponse("Access denied, please contact administrator");
+
+        var actualResponse = mockMvc.perform(get("/api/reservation"))
+                .andExpect(status().isForbidden())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenCreateNewReservationForAvailableDates_thenReturnReservationAndIncreaseReservationRepo()
             throws Exception {
 
@@ -70,6 +89,7 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenCreateNewReservationForUnavailableDates_thenReturnError() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, reservationRepository.count());
@@ -96,6 +116,7 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenUpdateReservationForAvailableDates_thenReturnResponse() throws Exception {
 
         var request = UpsertReservationRequest.builder()
@@ -135,6 +156,7 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenUpdateReservationForUnavailableDates_thenReturnError() throws Exception {
 
         var request = UpsertReservationRequest.builder()
@@ -160,6 +182,7 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenCancelReservation_thenReturnEmptyDatesRoomAndDecreaseReservationRepository() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, reservationRepository.count());

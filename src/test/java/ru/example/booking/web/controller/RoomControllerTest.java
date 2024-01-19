@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.example.booking.abstracts.RoomAbstractTest;
 import ru.example.booking.model.RoomDescription;
 import ru.example.booking.web.model.defaults.ErrorResponse;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindAllRooms_thenReturnAllRooms() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, roomRepository.count());
@@ -36,6 +38,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindRoomById_thenReturnRoom() throws Exception {
         JsonAssert.assertJsonEquals(true, roomRepository.existsById(1L));
 
@@ -53,6 +56,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenDeleteRoomById_thenReturnNoContentAndDecreasedRepository() throws Exception {
         JsonAssert.assertJsonEquals(5L, roomRepository.count());
 
@@ -64,6 +68,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveRoom_thenReturnRoomAndIncreasedRepository() throws Exception {
         JsonAssert.assertJsonEquals(5L, roomRepository.count());
 
@@ -92,6 +97,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenUpdateRoomById_thenReturnUpdatedRoom() throws Exception {
 
         String newName = "UpdatedRoom";
@@ -175,6 +181,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @ParameterizedTest
     @MethodSource("invalidInputStringsTwoValues")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveRoomWithIncorrectNameLength_thenReturnError(String name) throws Exception {
 
         var request = UpsertRoomRequest.builder()
@@ -201,6 +208,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveRoomWithNegativeRoomNumber_thenReturnError() throws Exception {
 
         var request = UpsertRoomRequest.builder()
@@ -227,6 +235,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveRoomWithNegativePrice_thenReturnError() throws Exception {
 
         var request = UpsertRoomRequest.builder()
@@ -253,6 +262,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveRoomWithZeroCapacity_thenReturnError() throws Exception {
 
         var request = UpsertRoomRequest.builder()
@@ -279,6 +289,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveRoomWithNegativeCapacity_thenReturnError() throws Exception {
 
         var request = UpsertRoomRequest.builder()
@@ -305,6 +316,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveRoomWithCapacityMoreThen15_thenReturnError() throws Exception {
 
         var request = UpsertRoomRequest.builder()
@@ -331,6 +343,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindRoomByNotExistedId_thenReturnError() throws Exception {
 
         var expectedResponse = new ErrorResponse("Room not found, ID is 100");
@@ -345,6 +358,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenUpdateRoomByNotExistedId_thenReturnError() throws Exception {
 
         var request = UpsertRoomRequest.builder()
@@ -365,6 +379,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenSaveRoomWithExistedName_thenReturnError() throws Exception {
 
         var request = UpsertRoomRequest.builder()
@@ -390,6 +405,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenDeleteRoomByNotExistedId_thenReturnError() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, roomRepository.count());

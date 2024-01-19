@@ -3,6 +3,7 @@ package ru.example.booking.web.controller;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.example.booking.abstracts.UserAbstractTest;
 import ru.example.booking.model.RoleType;
 import ru.example.booking.model.User;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends UserAbstractTest {
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindAllUsers_thenReturnOkResponse() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, userRepository.count());
@@ -35,6 +37,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindUserById_theReturnOkResponse() throws Exception {
 
         JsonAssert.assertJsonEquals(true, userRepository.existsById(1L));
@@ -53,6 +56,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindUserByUsername_thenReturnOkResponse() throws Exception {
 
         JsonAssert.assertJsonEquals(true, userRepository.existsByUsername("user5"));
@@ -70,6 +74,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenCreateNewUser_thenReturnNewUserAndIncreaseUserRepository() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, userRepository.count());
@@ -98,17 +103,19 @@ public class UserControllerTest extends UserAbstractTest {
                         .getResponse()
                         .getContentAsString();
 
+
         JsonAssert.assertJsonEquals(6L, userRepository.count());
         JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenCreateNewUserWithWrongRole_thenReturnError() throws Exception {
 
         var request = CreateUserRequest.builder()
                 .username("New user")
                 .email("newUser@email.com")
-                .password("pass")
+                .password(passwordEncoder.encode("pass"))
                 .build();
 
         mockMvc.perform(post("/api/user?role=ROLE_NON")
@@ -120,6 +127,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenUpdateUser_thenReturnUpdatedUser() throws Exception {
 
         String newUsername1 = "newUsername";
@@ -153,7 +161,6 @@ public class UserControllerTest extends UserAbstractTest {
         var expectedResponse3 = userMapper.userToUserResponse(createUserWithAdminRole(5));
         expectedResponse3.setUsername(newUsername2);
         expectedResponse3.setEmail(newEmail2);
-        expectedResponse3.setPassword(newPassword);
         expectedResponse3.setRoles(newRoles);
 
         var actualResponse1 = mockMvc.perform(put("/api/user/1")
@@ -187,6 +194,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenDeleteUserById_thenReturnNoContentAndDecreaseUserRepository() throws Exception {
         JsonAssert.assertJsonEquals(5L, userRepository.count());
 
@@ -200,6 +208,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindUserByNotExistId_thenReturnError() throws Exception {
         var expectedResponse = new ErrorResponse("User not found, ID is 100");
 
@@ -213,6 +222,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindUserByNotExistUsername_thenReturnError() throws Exception {
         var expectedResponse = new ErrorResponse("User not found, username is 100");
 
@@ -226,6 +236,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenUpdateUserByNotExistId_thenReturnError() throws Exception {
         var expectedResponse = new ErrorResponse("User not found, ID is 100");
 
@@ -244,6 +255,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenDeleteUserByNotExistId_thenReturnError() throws Exception {
         var expectedResponse = new ErrorResponse("User not found, ID is 100");
 
