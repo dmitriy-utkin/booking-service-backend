@@ -6,11 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Application {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-	//TODO: описать данное приложение в docker, чтобы потом запускать его в виде контейнера
-	//TODO: описать приложение в openAPI
+    //TODO: описать данное приложение в docker, чтобы потом запускать его в виде контейнера
+    //TODO: описать приложение в openAPI
 
 }

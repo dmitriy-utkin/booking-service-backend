@@ -85,8 +85,8 @@ public class RoomControllerTest extends RoomAbstractTest {
         expectedResponse.setId(6L);
 
         var actualResponse = mockMvc.perform(post("/api/room")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
@@ -150,8 +150,8 @@ public class RoomControllerTest extends RoomAbstractTest {
         var expectedResponse3 = roomMapper.roomToResponse(room3);
 
         var actualResponse1 = mockMvc.perform(put("/api/room/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request1)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request1)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -196,8 +196,8 @@ public class RoomControllerTest extends RoomAbstractTest {
         var expectedResponse = new ErrorResponse("Room name length should be between 2 and 100 characters");
 
         var actualResponse = mockMvc.perform(post("/api/room")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()

@@ -232,12 +232,12 @@ public class UserControllerTest extends UserAbstractTest {
         );
 
         var actualResponse = mockMvc.perform(post("/api/user?role=ROLE_ADMIN")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(request)))
-                        .andExpect(status().isCreated())
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
 
         JsonAssert.assertJsonEquals(6L, userRepository.count());
@@ -452,10 +452,10 @@ public class UserControllerTest extends UserAbstractTest {
         JsonAssert.assertJsonEquals(5L, userRepository.count());
 
         mockMvc.perform(delete("/api/user/1"))
-                        .andExpect(status().isNoContent())
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
+                .andExpect(status().isNoContent())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
         JsonAssert.assertJsonEquals(4L, userRepository.count());
     }

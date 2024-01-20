@@ -122,7 +122,7 @@ public class RoomServiceImpl implements RoomService {
         Room existedRoom = findById(roomId);
 
         var start = strDateToLocalDate(from);
-        var end =  strDateToLocalDate(to);
+        var end = strDateToLocalDate(to);
 
         Map<Boolean, String> preValidation = preValidateDates(start, end);
         if (preValidation.containsKey(false)) {
@@ -133,7 +133,7 @@ public class RoomServiceImpl implements RoomService {
         Set<LocalDate> datesToBeChecked = getDateList(start, end);
 
         if (!isBookedDates(existedDates, datesToBeChecked)) {
-            throw new RoomBookingException( "This date/s is not booked");
+            throw new RoomBookingException("This date/s is not booked");
         }
         existedDates.removeAll(datesToBeChecked);
         existedRoom.setBookedDates(existedDates);
@@ -154,7 +154,7 @@ public class RoomServiceImpl implements RoomService {
         Set<LocalDate> datesToBeChecked = getDateList(from, to);
 
         if (!isBookedDates(existedDates, datesToBeChecked)) {
-            throw new RoomBookingException( "This date/s is not booked");
+            throw new RoomBookingException("This date/s is not booked");
         }
 
         existedDates.removeAll(datesToBeChecked);

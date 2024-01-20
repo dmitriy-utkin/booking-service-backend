@@ -43,10 +43,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(RoleType role, User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
-            throw new EntityAlreadyExists("User with username \"" + user.getUsername() +"\" is already exists");
+            throw new EntityAlreadyExists("User with username \"" + user.getUsername() + "\" is already exists");
         }
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new EntityAlreadyExists("User with email \"" + user.getEmail() +"\" is already exists");
+            throw new EntityAlreadyExists("User with email \"" + user.getEmail() + "\" is already exists");
         }
         user.setRoles(Set.of(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));

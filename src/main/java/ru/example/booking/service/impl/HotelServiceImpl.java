@@ -9,7 +9,6 @@ import ru.example.booking.repository.HotelRepository;
 import ru.example.booking.service.HotelService;
 import ru.example.booking.util.BeanUtils;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 @Service

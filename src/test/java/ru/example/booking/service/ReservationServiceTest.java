@@ -78,7 +78,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
         var room = createDefaultRoomWithoutBookedDates(1, RoomDescription.STANDARD, false);
         room.setBookedDates(
                 new TreeSet<>(roomService.getDateList(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15)))
-                );
+        );
 
         var expectedResult = Reservation.builder()
                 .id(1L)

@@ -248,7 +248,7 @@ public class AbstractMainTest {
     }
 
     protected Room createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription description) {
-        int  roomNum = (int) (roomRepository.count() + 1);
+        int roomNum = (int) (roomRepository.count() + 1);
         var room = createDefaultRoomWithoutBookedDates(roomNum, description, true);
         Set<LocalDate> dates = Set.of(
                 LocalDate.now(),

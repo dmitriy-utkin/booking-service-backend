@@ -1,61 +1,61 @@
 {
-  "hotels": [
+  "hotels":[
     {
-      "name": "Luxury Hotel 5*",
-      "headline": "Experience the ultimate luxury",
-      "city": "New York",
-      "address": "123 Main Street",
-      "distance": 4.5,
-      "rating": 5,
-      "numberOfRatings": 1000
+      "name":"Luxury Hotel 5*",
+      "headline":"Experience the ultimate luxury",
+      "city":"New York",
+      "address":"123 Main Street",
+      "distance":4.5,
+      "rating":5,
+      "numberOfRatings":1000
     },
     {
-      "name": "Beachfront Resort 4*",
-      "headline": "Relax by the ocean",
-      "city": "Miami",
-      "address": "456 Ocean Drive",
-      "distance": 8,
-      "rating": 4.5,
-      "numberOfRatings": 800
+      "name":"Beachfront Resort 4*",
+      "headline":"Relax by the ocean",
+      "city":"Miami",
+      "address":"456 Ocean Drive",
+      "distance":8,
+      "rating":4.5,
+      "numberOfRatings":800
     },
     {
-      "name": "Cozy Inn 4*",
-      "headline": "Charming and comfortable",
-      "city": "Aspen",
-      "address": "789 Mountain Road",
-      "distance": 35,
-      "rating": 4.8,
-      "numberOfRatings": 600
+      "name":"Cozy Inn 4*",
+      "headline":"Charming and comfortable",
+      "city":"Aspen",
+      "address":"789 Mountain Road",
+      "distance":35,
+      "rating":4.8,
+      "numberOfRatings":600
     },
     {
-      "name": "Historic Bed and Breakfast 3*",
-      "headline": "Step back in time",
-      "city": "Charleston",
-      "address": "101 Historic Street",
-      "distance": 1.5,
-      "rating": 4.7,
-      "numberOfRatings": 900
+      "name":"Historic Bed and Breakfast 3*",
+      "headline":"Step back in time",
+      "city":"Charleston",
+      "address":"101 Historic Street",
+      "distance":1.5,
+      "rating":4.7,
+      "numberOfRatings":900
     },
     {
-      "name": "Modern Boutique Hotel 4*",
-      "headline": "Sleek and stylish",
-      "city": "Los Angeles",
-      "address": "202 Fashion Avenue",
-      "distance": 1.4,
-      "rating": 4.9,
-      "numberOfRatings": 1200
+      "name":"Modern Boutique Hotel 4*",
+      "headline":"Sleek and stylish",
+      "city":"Los Angeles",
+      "address":"202 Fashion Avenue",
+      "distance":1.4,
+      "rating":4.9,
+      "numberOfRatings":1200
     },
     {
-      "name": "Mountain Lodge 3*",
-      "headline": "Escape to the wilderness",
-      "city": "Denver",
-      "address": "303 Pine Tree Lane",
-      "distance": 20.4,
-      "rating": 4.6,
-      "numberOfRatings": 700
+      "name":"Mountain Lodge 3*",
+      "headline":"Escape to the wilderness",
+      "city":"Denver",
+      "address":"303 Pine Tree Lane",
+      "distance":20.4,
+      "rating":4.6,
+      "numberOfRatings":700
     }
   ],
-  "rooms": [
+  "rooms":[
     "Flexidy",
     "Sonsing",
     "Tempsoft",
@@ -157,7 +157,7 @@
     "Duobam",
     "Sub-Ex"
   ],
-  "dates": [
+  "dates":[
     "11/10/2024",
     "10/22/2024",
     "8/16/2024",

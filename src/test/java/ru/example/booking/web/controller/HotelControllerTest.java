@@ -63,8 +63,8 @@ public class HotelControllerTest extends HotelAbstractTest {
         expectedResponse.setId(6L);
 
         var actualResponse = mockMvc.perform(post("/api/hotel")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createRequest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createRequest)))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
@@ -108,8 +108,8 @@ public class HotelControllerTest extends HotelAbstractTest {
         var expectedResponse3 = hotelMapper.hotelToResponse(hotel3);
 
         var actualResponse1 = mockMvc.perform(put("/api/hotel/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateRequest1)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest1)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -143,7 +143,7 @@ public class HotelControllerTest extends HotelAbstractTest {
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
 
         mockMvc.perform(delete("/api/hotel/1"))
-                        .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
 
         JsonAssert.assertJsonEquals(4L, hotelRepository.count());
 

@@ -30,7 +30,7 @@ public interface HotelMapper {
                 .numberOfRatings(hotel.getNumberOfRatings())
                 .rating(formatter.format(hotel.getRating()))
                 .build();
-    };
+    }
 
     default HotelResponseList hotelListToResponseList(List<Hotel> hotels) {
         return new HotelResponseList(

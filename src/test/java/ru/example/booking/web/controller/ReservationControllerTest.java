@@ -203,8 +203,8 @@ public class ReservationControllerTest extends ReservationAbstractTest {
                 .build();
 
         var actualResponse = mockMvc.perform(post("/api/reservation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
