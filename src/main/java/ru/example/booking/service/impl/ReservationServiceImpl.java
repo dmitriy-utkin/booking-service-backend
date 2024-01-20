@@ -2,15 +2,16 @@ package ru.example.booking.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import ru.example.booking.aop.Validation;
-import ru.example.booking.aop.ValidationType;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.model.Reservation;
 import ru.example.booking.repository.ReservationRepository;
 import ru.example.booking.service.ReservationService;
 import ru.example.booking.service.RoomService;
+import ru.example.booking.service.UserService;
+import ru.example.booking.service.ValidationService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +26,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final RoomService roomService;
 
+    private final UserService userService;
+
+    private final ValidationService validationService;
+
     @Value("${app.dateFormat}")
     private String datePattern;
 
@@ -34,42 +39,51 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    @Validation(type = ValidationType.RESERVATION_FIND_BY)
-    public Reservation findById(Long id) {
-        return reservationRepository.findById(id).orElseThrow(
+    public Reservation findById(Long id, String username) {
+
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Reservation is not found, ID is " + id)
         );
+
+        if (!validationService.isValidAction(userService.findByUsernameWithoutPrivilegeValidation(username),
+                reservation.getUser())) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        return reservation;
     }
 
     @Override
-    public Reservation booking(Reservation reservation) {
+    public Reservation booking(Reservation reservation, String username) {
         roomService.addBookedDates(reservation.getRoom().getId(),
                 reservation.getCheckInDate(),
                 reservation.getCheckOutDate());
+        reservation.setUser(userService.findByUsernameWithoutPrivilegeValidation(username));
         return reservationRepository.save(reservation);
     }
 
     @Override
-    @Validation(type = ValidationType.RESERVATION_DELETE)
-    public void cancel(Long id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new EntityNotFoundException("Reservation is not found, ID is " + id);
-        }
+    public void cancel(Long id, String username) {
+        Reservation reservationForRemoving = findById(id, username);
 
-        Reservation reservationForRemoving = findById(id);
+        if (!validationService.isValidAction(userService.findByUsernameWithoutPrivilegeValidation(username),
+                reservationForRemoving.getUser())) {
+            throw new AccessDeniedException("Access denied");
+        }
 
         roomService.deleteBookedDates(id, reservationForRemoving.getCheckInDate(), reservationForRemoving.getCheckOutDate());
         reservationRepository.deleteById(id);
     }
 
     @Override
-    @Validation(type = ValidationType.RESERVATION_UPDATE)
-    public Reservation update(Long id, Reservation reservation) {
-        if (!reservationRepository.existsById(id)) {
-            throw new EntityNotFoundException("Reservation is not found, ID is " + id);
+    public Reservation update(Long id, Reservation reservation, String username) {
+        var existedReservation = findById(id, username);
+
+        if (!validationService.isValidAction(userService.findByUsernameWithoutPrivilegeValidation(username),
+                existedReservation.getUser())) {
+            throw new AccessDeniedException("Access denied");
         }
 
-        var existedReservation = findById(id);
         var roomBookedDays = reservation.getRoom().getBookedDates();
         var newBookingDays = roomService.getDateList(reservation.getCheckInDate(), reservation.getCheckOutDate());
 
@@ -86,6 +100,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getCheckOutDate());
 
         reservation.setId(id);
+        reservation.setUser(existedReservation.getUser());
 
         return reservationRepository.save(reservation);
     }

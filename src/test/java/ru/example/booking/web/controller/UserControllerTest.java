@@ -37,7 +37,37 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithoutLogging_thenReturnError() throws Exception {
+
+        mockMvc.perform(get("/api/user"))
+                .andExpect(status().isUnauthorized())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    @Test
+    public void whenFindByIdWithoutLogging_thenReturnError() throws Exception {
+
+        mockMvc.perform(get("/api/user/1"))
+                .andExpect(status().isUnauthorized())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    @Test
+    public void whenFindByUsernameWithoutLogging_thenReturnError() throws Exception {
+
+        mockMvc.perform(get("/api/user/username/user1"))
+                .andExpect(status().isUnauthorized())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    @Test
+    @WithMockUser(username = "user5")
     public void whenFindUserById_theReturnOkResponse() throws Exception {
 
         JsonAssert.assertJsonEquals(true, userRepository.existsById(1L));
@@ -52,11 +82,47 @@ public class UserControllerTest extends UserAbstractTest {
                 .getContentAsString();
 
         JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user5")
+    public void whenFindUserByOwnerIdWithoutAdmin_theReturnOkResponse() throws Exception {
+
+        JsonAssert.assertJsonEquals(true, userRepository.existsById(1L));
+        JsonAssert.assertJsonEquals(false, userRepository.existsById(6L));
+
+        var expectedResponse = userMapper.userToUserResponse(createUserWithUserRole(2));
+
+        var actualResponse = mockMvc.perform(get("/api/user/2"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenFindUserByNoRequesterId_theReturnError() throws Exception {
+
+        JsonAssert.assertJsonEquals(true, userRepository.existsById(1L));
+        JsonAssert.assertJsonEquals(false, userRepository.existsById(6L));
+
+        var expectedResponse = getAccessErrorResponse();
+
+        var actualResponse = mockMvc.perform(get("/api/user/2"))
+                .andExpect(status().isForbidden())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
 
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user5")
     public void whenFindUserByUsername_thenReturnOkResponse() throws Exception {
 
         JsonAssert.assertJsonEquals(true, userRepository.existsByUsername("user5"));
@@ -66,6 +132,42 @@ public class UserControllerTest extends UserAbstractTest {
 
         var actualResponse = mockMvc.perform(get("/api/user/username/user5"))
                 .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenFindUserByOwnerUsernameWithoutAdmin_thenReturnOkResponse() throws Exception {
+
+        JsonAssert.assertJsonEquals(true, userRepository.existsByUsername("user5"));
+        JsonAssert.assertJsonEquals(false, userRepository.existsByUsername("user6"));
+
+        var expectedResponse = userMapper.userToUserResponse(createUserWithUserRole(1));
+
+        var actualResponse = mockMvc.perform(get("/api/user/username/user1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenFindUserByNotOwnerUsername_thenReturnError() throws Exception {
+
+        JsonAssert.assertJsonEquals(true, userRepository.existsByUsername("user5"));
+        JsonAssert.assertJsonEquals(false, userRepository.existsByUsername("user6"));
+
+        var expectedResponse = getAccessErrorResponse();
+
+        var actualResponse = mockMvc.perform(get("/api/user/username/user5"))
+                .andExpect(status().isForbidden())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -109,6 +211,54 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
+    public void whenCreateNewUserWithoutLogging_thenReturnError() throws Exception {
+
+        var request = CreateUserRequest.builder()
+                .username("New user")
+                .email("newUser@email.com")
+                .password("pass")
+                .build();
+
+        mockMvc.perform(post("/api/user?role=ROLE_ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenCreateNewUserByRoleUser_thenReturnError() throws Exception {
+
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+
+        var request = CreateUserRequest.builder()
+                .username("New user")
+                .email("newUser@email.com")
+                .password("pass")
+                .build();
+
+        var expectedResponse = getAccessErrorResponse();
+
+        var actualResponse = mockMvc.perform(post("/api/user?role=ROLE_ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenCreateNewUserWithWrongRole_thenReturnError() throws Exception {
 
@@ -127,7 +277,7 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user5")
     public void whenUpdateUser_thenReturnUpdatedUser() throws Exception {
 
         String newUsername1 = "newUsername";
@@ -194,7 +344,76 @@ public class UserControllerTest extends UserAbstractTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user1")
+    public void whenUpdateUserByOwnerUser_thenReturnUpdatedUser() throws Exception {
+
+        String newUsername = "newUsername";
+
+        var request = UpdateUserRequest.builder()
+                .username(newUsername)
+                .build();
+
+        var expectedResponse = userMapper.userToUserResponse(createUserWithUserRole(1));
+        expectedResponse.setUsername(newUsername);
+
+        var actualResponse1 = mockMvc.perform(put("/api/user/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse1);
+    }
+
+    @Test
+    public void whenUpdateUserWithoutLogging_thenReturnError() throws Exception {
+
+        String newUsername = "newUsername";
+
+        var request = UpdateUserRequest.builder()
+                .username(newUsername)
+                .build();
+
+        mockMvc.perform(put("/api/user/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+    }
+
+    @Test
+    @WithMockUser(username = "user2")
+    public void whenUpdateUserByNotOwnerUser_thenReturnError() throws Exception {
+
+        String newUsername = "newUsername";
+
+        var request = UpdateUserRequest.builder()
+                .username(newUsername)
+                .build();
+
+        var expectedResponse = getAccessErrorResponse();
+
+        var actualResponse1 = mockMvc.perform(put("/api/user/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse1);
+    }
+
+    @Test
+    @WithMockUser(username = "user5")
     public void whenDeleteUserById_thenReturnNoContentAndDecreaseUserRepository() throws Exception {
         JsonAssert.assertJsonEquals(5L, userRepository.count());
 
@@ -205,6 +424,50 @@ public class UserControllerTest extends UserAbstractTest {
                         .getContentAsString();
 
         JsonAssert.assertJsonEquals(4L, userRepository.count());
+    }
+
+    @Test
+    public void whenDeleteUserByIdWithoutLogging_thenReturnError() throws Exception {
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+
+        mockMvc.perform(delete("/api/user/1"))
+                .andExpect(status().isUnauthorized())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(4L, userRepository.count());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenDeleteUserByOwnUser_thenReturnNoContentAndDecreaseUserRepository() throws Exception {
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+
+        mockMvc.perform(delete("/api/user/1"))
+                .andExpect(status().isNoContent())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(4L, userRepository.count());
+    }
+
+    @Test
+    @WithMockUser(username = "user2")
+    public void whenDeleteUserByNotOwnUser_thenReturnError() throws Exception {
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+
+        var expectedResponse = getAccessErrorResponse();
+
+        var actualResponse = mockMvc.perform(delete("/api/user/1"))
+                .andExpect(status().isForbidden())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
     }
 
     @Test

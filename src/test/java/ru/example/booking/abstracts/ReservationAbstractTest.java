@@ -8,6 +8,8 @@ public class ReservationAbstractTest extends AbstractMainTest {
     public void beforeEach() {
         resetSequence();
 
-        createDefaultReservationListWithStepByCounter(5, true).forEach(reservationService::booking);
+        createDefaultReservationListWithStepByCounter(5, true).forEach(
+                reservation -> reservationService.booking(reservation, reservation.getUser().getUsername())
+        );
     }
 }

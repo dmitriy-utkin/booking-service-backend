@@ -33,6 +33,7 @@ import ru.example.booking.service.ReservationService;
 import ru.example.booking.service.RoomService;
 import ru.example.booking.service.UserService;
 import ru.example.booking.web.controller.ReservationController;
+import ru.example.booking.web.model.defaults.ErrorResponse;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -278,7 +279,8 @@ public class AbstractMainTest {
         var room = roomRepository.save(
                 createDefaultRoomWithoutBookedDates(num, RoomDescription.STANDARD, withHotelSaving)
         );
-        var user = userRepository.save(createDefaultUser(num, RoleType.ROLE_USER));
+        User user = num == 5 ? userRepository.save(createDefaultUser(num, RoleType.ROLE_ADMIN)) :
+                userRepository.save(createDefaultUser(num, RoleType.ROLE_USER));
         return createDefaultReservation(num, room, user, from, to);
     }
 
@@ -290,6 +292,10 @@ public class AbstractMainTest {
                 .checkInDate(from)
                 .checkOutDate(to)
                 .build();
+    }
+
+    protected ErrorResponse getAccessErrorResponse() {
+        return new ErrorResponse("Access denied, please contact administrator");
     }
 
 }

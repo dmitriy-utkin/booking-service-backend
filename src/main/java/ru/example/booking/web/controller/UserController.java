@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.mapper.UserMapper;
 import ru.example.booking.model.RoleType;
@@ -29,13 +31,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> findById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(userMapper.userToUserResponse(userService.findById(id)));
+    public ResponseEntity<UserResponse> findById(@PathVariable("id") Long id,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userMapper.userToUserResponse(userService.findById(id, userDetails.getUsername())));
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<UserResponse> findByUsername(@PathVariable("username") String username) {
-        return ResponseEntity.ok(userMapper.userToUserResponse(userService.findByUsername(username)));
+    public ResponseEntity<UserResponse> findByUsername(@PathVariable("username") String username,
+                                                       @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userMapper.userToUserResponse(userService.findByUsername(username, userDetails.getUsername())));
     }
 
     @PostMapping
@@ -50,17 +54,19 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable("id") Long id, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<UserResponse> update(@PathVariable("id") Long id, @RequestBody UpdateUserRequest request,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(
                 userMapper.userToUserResponse(
-                        userService.update(id, userMapper.updateRequestToUser(request))
+                        userService.update(id, userMapper.updateRequestToUser(request), userDetails.getUsername())
                 )
         );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserResponse> deleteById(@PathVariable("id") Long id) {
-        userService.deleteById(id);
+    public ResponseEntity<UserResponse> deleteById(@PathVariable("id") Long id,
+                                                   @AuthenticationPrincipal UserDetails userDetails) {
+        userService.deleteById(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 }

@@ -9,14 +9,18 @@ public interface UserService {
 
     List<User> findAll();
 
-    User findById(Long id);
+    User findById(Long id, String username);
 
     User save(RoleType role, User user);
 
-    User update(Long id, User user);
+    User update(Long id, User user, String username);
 
-    User findByUsername(String username);
+    User findByUsername(String username, String requesterUsername);
 
-    void deleteById(Long id);
+    void deleteById(Long id, String username);
+
+    User findByUsernameWithoutPrivilegeValidation(String username);
+
+    User findByIdWithoutPrivilegeValidation(Long id);
 
 }

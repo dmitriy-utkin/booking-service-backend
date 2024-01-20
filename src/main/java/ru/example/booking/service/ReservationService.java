@@ -9,13 +9,13 @@ public interface ReservationService {
 
     List<Reservation> findAll();
 
-    Reservation findById(Long id);
+    Reservation findById(Long id, String username);
 
-    Reservation booking(Reservation reservation);
+    Reservation booking(Reservation reservation, String username);
 
-    void cancel(Long id);
+    void cancel(Long id, String username);
 
-    Reservation update(Long id, Reservation reservation);
+    Reservation update(Long id, Reservation reservation, String username);
 
     String localDateToStr(LocalDate date);
 

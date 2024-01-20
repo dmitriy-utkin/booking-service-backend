@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.exception.RoomBookingException;
@@ -51,6 +52,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> accessDenied(AccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied, please contact administrator"));
     }
+
 }

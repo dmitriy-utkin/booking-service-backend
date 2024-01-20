@@ -26,7 +26,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
 
         var expectedResultId = 6L;
 
-        var actualResult = reservationService.booking(reservation).getId();
+        var actualResult = reservationService.booking(reservation, "user1").getId();
 
         JsonAssert.assertJsonEquals(expectedResultId, actualResult);
     }
@@ -45,7 +45,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
 
         ErrorResponse actualResult = null;
         try {
-            reservationService.booking(reservation);
+            reservationService.booking(reservation, "user1");
         } catch (RoomBookingException e) {
             actualResult = new ErrorResponse(e.getMessage());
         }
@@ -58,7 +58,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
 
         var expectedResult = true;
 
-        reservationService.cancel(1L);
+        reservationService.cancel(1L, "user1");
 
         var actualResult = roomService.findById(1L).getBookedDates().isEmpty();
 
@@ -88,7 +88,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
                 .checkOutDate(LocalDate.now().plusDays(15))
                 .build();
 
-        var actualResult = reservationService.update(1L, updatedReservation);
+        var actualResult = reservationService.update(1L, updatedReservation, "user1");
 
         JsonAssert.assertJsonEquals(expectedResult, actualResult);
     }
@@ -108,7 +108,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
         ErrorResponse actualResponse = null;
 
         try {
-            reservationService.update(1L, updatedReservation);
+            reservationService.update(1L, updatedReservation, "user1");
         } catch (RoomBookingException e) {
             actualResponse = new ErrorResponse("This dates in unavailable");
         }

@@ -1,16 +1,16 @@
 package ru.example.booking.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.example.booking.aop.Validation;
-import ru.example.booking.aop.ValidationType;
 import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.model.RoleType;
 import ru.example.booking.model.User;
 import ru.example.booking.repository.UserRepository;
 import ru.example.booking.service.UserService;
+import ru.example.booking.service.ValidationService;
 import ru.example.booking.util.BeanUtils;
 
 import java.util.List;
@@ -24,17 +24,20 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final ValidationService validationService;
+
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
     @Override
-    @Validation(type = ValidationType.USER_FIND_BY)
-    public User findById(Long id) {
-        return userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("User not found, ID is " + id)
-        );
+    public User findById(Long id, String username) {
+        User user = findByIdWithoutPrivilegeValidation(id);
+        if (!validationService.isValidAction(findByUsernameWithoutPrivilegeValidation(username), user)) {
+            throw new AccessDeniedException("Access denied");
+        }
+        return user;
     }
 
     @Override
@@ -51,12 +54,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Validation(type = ValidationType.USER_UPDATE)
-    public User update(Long id, User user) {
-        if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("User not found, ID is " + id);
+    public User update(Long id, User user, String username) {
+        var existedUser = findById(id, username);
+
+        if (!validationService.isValidAction(findByUsernameWithoutPrivilegeValidation(username), existedUser)) {
+            throw new AccessDeniedException("Access denied");
         }
-        var existedUser = findById(id);
+
         BeanUtils.copyNonNullProperties(user, existedUser);
         if (user.getPassword() != null) {
             existedUser.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -65,19 +69,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Validation(type = ValidationType.USER_FIND_BY)
-    public User findByUsername(String username) {
+    public User findByUsername(String username, String requesterUsername) {
+
+        User user = findByUsernameWithoutPrivilegeValidation(username);
+
+        if (!validationService.isValidAction(findByUsernameWithoutPrivilegeValidation(requesterUsername), user)) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        return user;
+    }
+
+    @Override
+    public void deleteById(Long id, String username) {
+
+        User existedUser = findByIdWithoutPrivilegeValidation(id);
+
+        if (!validationService.isValidAction(findByUsernameWithoutPrivilegeValidation(username), existedUser)) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public User findByUsernameWithoutPrivilegeValidation(String username) {
         return userRepository.findByUsername(username).orElseThrow(
                 () -> new EntityNotFoundException("User not found, username is " + username)
         );
     }
 
     @Override
-    @Validation(type = ValidationType.USER_DELETE)
-    public void deleteById(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("User not found, ID is " + id);
-        }
-        userRepository.deleteById(id);
+    public User findByIdWithoutPrivilegeValidation(Long id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("User not found, ID is " + id)
+        );
     }
 }
