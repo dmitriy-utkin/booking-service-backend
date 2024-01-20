@@ -11,7 +11,7 @@ public interface ReservationService {
 
     Reservation findById(Long id);
 
-    Reservation booking(Reservation reservation);
+    Reservation booking(Reservation reservation, String username);
 
     void cancel(Long id);
 

@@ -20,3 +20,6 @@ app:
     mockHotelPath:
 
   dateFormat: "dd/MM/yyyy"
+
+  validation:
+      enable: true

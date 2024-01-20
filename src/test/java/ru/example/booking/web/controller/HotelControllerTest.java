@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import ru.example.booking.abstracts.HotelAbstractTest;
 import ru.example.booking.web.model.defaults.ErrorResponse;
 import ru.example.booking.web.model.hotel.CreateHotelRequest;
@@ -15,6 +17,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class HotelControllerTest extends HotelAbstractTest {
+
+    @DynamicPropertySource
+    public static void register(DynamicPropertyRegistry registry) {
+        registry.add("app.validation.enable", () -> "false");
+    }
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})

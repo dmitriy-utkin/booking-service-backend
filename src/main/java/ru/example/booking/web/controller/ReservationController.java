@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.mapper.ReservationMapper;
 import ru.example.booking.service.ReservationService;
@@ -33,10 +35,11 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody UpsertReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody UpsertReservationRequest request,
+                                                                 @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 reservationMapper.reservationToResponse(
-                        reservationService.booking(reservationMapper.requestToReservation(request))
+                        reservationService.booking(reservationMapper.requestToReservation(request), userDetails.getUsername())
                 )
         );
     }

@@ -22,7 +22,6 @@ public abstract class ReservationMapperDelegate implements ReservationMapper {
     @Override
     public Reservation requestToReservation(UpsertReservationRequest request) {
         return Reservation.builder()
-                .user(userService.findById(request.getUserId()))
                 .room(roomService.findById(request.getRoomId()))
                 .checkInDate(roomService.strDateToLocalDate(request.getCheckInDate()))
                 .checkOutDate(roomService.strDateToLocalDate(request.getCheckOutDate()))

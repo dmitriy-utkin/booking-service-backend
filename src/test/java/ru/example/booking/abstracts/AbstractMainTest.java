@@ -8,6 +8,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -92,9 +95,6 @@ public class AbstractMainTest {
 
     @Autowired
     protected ReservationService reservationService;
-
-    @Autowired
-    protected ReservationController reservationController;
 
     @Autowired
     protected ReservationMapper reservationMapper;

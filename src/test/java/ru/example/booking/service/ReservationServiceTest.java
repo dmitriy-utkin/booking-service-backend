@@ -2,6 +2,9 @@ package ru.example.booking.service;
 
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import ru.example.booking.abstracts.ReservationAbstractTest;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.model.Reservation;
@@ -13,6 +16,11 @@ import java.time.LocalDate;
 import java.util.TreeSet;
 
 public class ReservationServiceTest extends ReservationAbstractTest {
+
+    @DynamicPropertySource
+    public static void register(DynamicPropertyRegistry registry) {
+        registry.add("app.validation.enable", () -> "false");
+    }
 
     @Test
     public void whenBookingForAvailableDates_thenReturnReservation() {
@@ -26,12 +34,13 @@ public class ReservationServiceTest extends ReservationAbstractTest {
 
         var expectedResultId = 6L;
 
-        var actualResult = reservationService.booking(reservation).getId();
+        var actualResult = reservationService.booking(reservation, "user1").getId();
 
         JsonAssert.assertJsonEquals(expectedResultId, actualResult);
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"USER"})
     public void whenBookingForUnavailableDates_thenReturnError() {
 
         var reservation = Reservation.builder()
@@ -45,7 +54,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
 
         ErrorResponse actualResult = null;
         try {
-            reservationService.booking(reservation);
+            reservationService.booking(reservation, "user1");
         } catch (RoomBookingException e) {
             actualResult = new ErrorResponse(e.getMessage());
         }
@@ -54,6 +63,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"USER"})
     public void whenCancelBookedDates_thenReturnsEmptyBookedDatesListByRoom() {
 
         var expectedResult = true;
@@ -66,6 +76,7 @@ public class ReservationServiceTest extends ReservationAbstractTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"USER"})
     public void whenUpdateReservationForAvailableDates_thenReturnReservation() {
 
         var updatedReservation = Reservation.builder()

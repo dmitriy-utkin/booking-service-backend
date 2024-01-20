@@ -4,6 +4,8 @@ import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import ru.example.booking.abstracts.ReservationAbstractTest;
 import ru.example.booking.web.model.defaults.ErrorResponse;
 import ru.example.booking.web.model.reservation.ReservationResponse;
@@ -16,6 +18,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ReservationControllerTest extends ReservationAbstractTest {
+
+    @DynamicPropertySource
+    public static void register(DynamicPropertyRegistry registry) {
+        registry.add("app.validation.enable", () -> "false");
+    }
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -53,14 +60,13 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user5", roles = {"ADMIN"})
     public void whenCreateNewReservationForAvailableDates_thenReturnReservationAndIncreaseReservationRepo()
             throws Exception {
 
         JsonAssert.assertJsonEquals(5L, reservationRepository.count());
 
         var request = UpsertReservationRequest.builder()
-                .userId(1L)
                 .roomId(1L)
                 .checkInDate(reservationService.localDateToStr(LocalDate.now().plusDays(3)))
                 .checkOutDate(reservationService.localDateToStr(LocalDate.now().plusDays(5)))
@@ -72,7 +78,7 @@ public class ReservationControllerTest extends ReservationAbstractTest {
                 .roomId(1L)
                 .checkInDate(reservationService.localDateToStr(LocalDate.now().plusDays(3)))
                 .checkOutDate(reservationService.localDateToStr(LocalDate.now().plusDays(5)))
-                .userId(1L)
+                .userId(5L)
                 .userEmail("user1@email.com")
                 .build();
 
@@ -89,13 +95,12 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user5", roles = {"ADMIN"})
     public void whenCreateNewReservationForUnavailableDates_thenReturnError() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, reservationRepository.count());
 
         var request = UpsertReservationRequest.builder()
-                .userId(1L)
                 .roomId(1L)
                 .checkInDate(reservationService.localDateToStr(LocalDate.now()))
                 .checkOutDate(reservationService.localDateToStr(LocalDate.now().plusDays(5)))
@@ -116,11 +121,10 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user5", roles = {"ADMIN"})
     public void whenUpdateReservationForAvailableDates_thenReturnResponse() throws Exception {
 
         var request = UpsertReservationRequest.builder()
-                .userId(1L)
                 .roomId(1L)
                 .checkInDate(reservationService.localDateToStr(LocalDate.now().plusDays(5)))
                 .checkOutDate(reservationService.localDateToStr(LocalDate.now().plusDays(5)))
@@ -132,7 +136,7 @@ public class ReservationControllerTest extends ReservationAbstractTest {
                 .roomId(1L)
                 .checkInDate(reservationService.localDateToStr(LocalDate.now().plusDays(5)))
                 .checkOutDate(reservationService.localDateToStr(LocalDate.now().plusDays(5)))
-                .userId(1L)
+                .userId(5L)
                 .userEmail("user1@email.com")
                 .build();
 
@@ -156,11 +160,10 @@ public class ReservationControllerTest extends ReservationAbstractTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user5", roles = {"ADMIN"})
     public void whenUpdateReservationForUnavailableDates_thenReturnError() throws Exception {
 
         var request = UpsertReservationRequest.builder()
-                .userId(1L)
                 .roomId(2L)
                 .checkInDate(reservationService.localDateToStr(LocalDate.now()))
                 .checkOutDate(reservationService.localDateToStr(LocalDate.now().plusDays(5)))

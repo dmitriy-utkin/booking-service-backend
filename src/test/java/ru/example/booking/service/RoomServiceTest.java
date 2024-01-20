@@ -2,6 +2,8 @@ package ru.example.booking.service;
 
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import ru.example.booking.abstracts.RoomAbstractTest;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.model.Room;
@@ -14,6 +16,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class RoomServiceTest extends RoomAbstractTest {
+
+    @DynamicPropertySource
+    public static void register(DynamicPropertyRegistry registry) {
+        registry.add("app.validation.enable", () -> "false");
+    }
 
     @Test
     public void whenBookAvailableDates_thenReturnUpdatedRoom() throws Exception {

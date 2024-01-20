@@ -21,7 +21,4 @@ public class UpsertReservationRequest {
 
     @NotNull
     private Long roomId;
-
-    @NotNull
-    private Long userId;
 }

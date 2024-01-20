@@ -11,6 +11,7 @@ import ru.example.booking.model.Reservation;
 import ru.example.booking.repository.ReservationRepository;
 import ru.example.booking.service.ReservationService;
 import ru.example.booking.service.RoomService;
+import ru.example.booking.service.UserService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +25,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
 
     private final RoomService roomService;
+
+    private final UserService userService;
 
     @Value("${app.dateFormat}")
     private String datePattern;
@@ -42,10 +45,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Reservation booking(Reservation reservation) {
+    public Reservation booking(Reservation reservation, String username) {
         roomService.addBookedDates(reservation.getRoom().getId(),
                 reservation.getCheckInDate(),
                 reservation.getCheckOutDate());
+        reservation.setUser(userService.findByUsername(username));
         return reservationRepository.save(reservation);
     }
 
