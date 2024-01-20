@@ -9,6 +9,7 @@ import ru.example.booking.repository.HotelRepository;
 import ru.example.booking.service.HotelService;
 import ru.example.booking.util.BeanUtils;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 @Service
@@ -62,5 +63,19 @@ public class HotelServiceImpl implements HotelService {
             throw new EntityNotFoundException("Hotel not found, ID is " + id);
         }
         hotelRepository.deleteById(id);
+    }
+
+    @Override
+    public Hotel updateRating(Long hotelId, int newRating) {
+        Hotel existedHotel = findById(hotelId);
+
+        float newTotalRating = existedHotel.getRating() * existedHotel.getNumberOfRatings() + newRating;
+        int newNumberOfRatings = existedHotel.getNumberOfRatings() + 1;
+        float newHotelRating = newTotalRating / (float) newNumberOfRatings;
+
+        existedHotel.setNumberOfRatings(newNumberOfRatings);
+        existedHotel.setRating(newHotelRating);
+
+        return updateById(hotelId, existedHotel);
     }
 }

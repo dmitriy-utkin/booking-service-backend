@@ -1,17 +1,18 @@
 package ru.example.booking.web.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.mapper.HotelMapper;
 import ru.example.booking.service.HotelService;
-import ru.example.booking.web.model.hotel.CreateHotelRequest;
-import ru.example.booking.web.model.hotel.HotelResponse;
-import ru.example.booking.web.model.hotel.HotelResponseList;
-import ru.example.booking.web.model.hotel.UpdateHotelRequest;
+import ru.example.booking.web.model.hotel.*;
 
 @RestController
 @RequestMapping("/api/hotel")
@@ -58,5 +59,11 @@ public class HotelController {
     public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         hotelService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/rate/{id}")
+    public ResponseEntity<HotelResponse> updateRating(@PathVariable("id") Long id,
+                                                      @RequestParam @Min(1) @Max(5) Integer newRating) {
+        return ResponseEntity.ok(hotelMapper.hotelToResponse(hotelService.updateRating(id, newRating)));
     }
 }

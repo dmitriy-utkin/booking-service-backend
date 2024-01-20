@@ -21,9 +21,9 @@ public class HotelResponse {
 
     private String address;
 
-    private Float distance;
+    private String distance;
 
-    private Float rating;
+    private String rating;
 
     private Integer numberOfRatings;
 

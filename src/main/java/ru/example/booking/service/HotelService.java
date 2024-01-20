@@ -17,4 +17,6 @@ public interface HotelService {
     Hotel save(Hotel hotel);
 
     void deleteById(Long id);
+
+    Hotel updateRating(Long hotelId, int newRating);
 }

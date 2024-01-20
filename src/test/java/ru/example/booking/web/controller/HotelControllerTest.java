@@ -488,4 +488,87 @@ public class HotelControllerTest extends HotelAbstractTest {
         JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenUpdateHotelRating_thenReturnUpdatedHotel1() throws Exception {
+        var hotel = createDefaultHotel(1);
+        hotel.setNumberOfRatings(2);
+        hotel.setRating(3.0F);
+
+        var expectedResponse = hotelMapper.hotelToResponse(hotel);
+
+        var actualResponse = mockMvc.perform(put("/api/hotel/rate/1?newRating=5"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(5L, hotelRepository.count());
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenUpdateHotelRating_thenReturnUpdatedHotel2() throws Exception {
+        var hotel = createDefaultHotel(1);
+        hotel.setNumberOfRatings(2);
+        hotel.setRating(2.5F);
+
+        var expectedResponse = hotelMapper.hotelToResponse(hotel);
+
+        var actualResponse = mockMvc.perform(put("/api/hotel/rate/1?newRating=4"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(5L, hotelRepository.count());
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenUpdateHotelRating_thenReturnUpdatedHotel3() throws Exception {
+        var hotel = createDefaultHotel(5);
+        hotel.setNumberOfRatings(6);
+        hotel.setRating(4.8F);
+
+        var expectedResponse = hotelMapper.hotelToResponse(hotel);
+
+        var actualResponse = mockMvc.perform(put("/api/hotel/rate/5?newRating=4"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(5L, hotelRepository.count());
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenUpdateHotelRatingWithValueMoreThan5_thenReturnError() throws Exception {
+        mockMvc.perform(put("/api/hotel/rate/2?newRating=6"))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    public void whenUpdateHotelRatingWithValueLessThan1_thenReturnError() throws Exception {
+        mockMvc.perform(put("/api/hotel/rate/2?newRating=0"))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+
+    @Test
+    public void whenUpdateHotelRatingWithoutLogging_thenReturnError() throws Exception {
+        mockMvc.perform(put("/api/hotel/rate/1?newRating=5"))
+                .andExpect(status().isUnauthorized());
+    }
 }

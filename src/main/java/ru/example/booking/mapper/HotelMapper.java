@@ -8,6 +8,7 @@ import ru.example.booking.web.model.hotel.HotelResponse;
 import ru.example.booking.web.model.hotel.HotelResponseList;
 import ru.example.booking.web.model.hotel.UpdateHotelRequest;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -17,7 +18,19 @@ public interface HotelMapper {
 
     Hotel updateRequestToHotel(UpdateHotelRequest request);
 
-    HotelResponse hotelToResponse(Hotel hotel);
+    default HotelResponse hotelToResponse(Hotel hotel) {
+        DecimalFormat formatter = new DecimalFormat("#.#");
+        return HotelResponse.builder()
+                .id(hotel.getId())
+                .address(hotel.getAddress())
+                .name(hotel.getName())
+                .city(hotel.getCity())
+                .distance(formatter.format(hotel.getDistance()))
+                .headline(hotel.getHeadline())
+                .numberOfRatings(hotel.getNumberOfRatings())
+                .rating(formatter.format(hotel.getRating()))
+                .build();
+    };
 
     default HotelResponseList hotelListToResponseList(List<Hotel> hotels) {
         return new HotelResponseList(
