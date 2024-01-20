@@ -74,26 +74,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room addBookedDates(Long roomId, String from, String to) {
-        Room existedRoom = findById(roomId);
-
-        var start = strDateToLocalDate(from);
-        var end = strDateToLocalDate(to);
-
-        Map<Boolean, String> preValidation = preValidateDates(start, end);
-        if (preValidation.containsKey(false)) {
-            throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
-        }
-
-        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
-        Set<LocalDate> datesToBeChecked = new TreeSet<>(getDateList(start, end));
-
-        if (!isAvailableDates(existedDates, datesToBeChecked)) {
-            throw new RoomBookingException("This dates is unavailable");
-        }
-
-        existedDates.addAll(datesToBeChecked);
-        existedRoom.setBookedDates(existedDates);
-        return existedRoom;
+        return addBookedDates(roomId, strDateToLocalDate(from), strDateToLocalDate(to));
     }
 
     @Override
@@ -119,26 +100,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room deleteBookedDates(Long roomId, String from, String to) {
-        Room existedRoom = findById(roomId);
-
-        var start = strDateToLocalDate(from);
-        var end = strDateToLocalDate(to);
-
-        Map<Boolean, String> preValidation = preValidateDates(start, end);
-        if (preValidation.containsKey(false)) {
-            throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
-        }
-
-        Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
-        Set<LocalDate> datesToBeChecked = getDateList(start, end);
-
-        if (!isBookedDates(existedDates, datesToBeChecked)) {
-            throw new RoomBookingException("This date/s is not booked");
-        }
-        existedDates.removeAll(datesToBeChecked);
-        existedRoom.setBookedDates(existedDates);
-
-        return existedRoom;
+        return deleteBookedDates(roomId, strDateToLocalDate(from), strDateToLocalDate(to));
     }
 
     @Override
