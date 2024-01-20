@@ -19,6 +19,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends UserAbstractTest {
 
     @Test
+    public void whenCreateNewUserOnPublicControllerWithoutLogging_thenReturnNewUser() throws Exception {
+
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
+
+        var request = CreateUserRequest.builder()
+                .username("New user")
+                .email("newUser@email.com")
+                .password("pass")
+                .build();
+
+        var expectedResponse = userMapper.userToUserResponse(
+                User.builder()
+                        .id(6L)
+                        .username("New user")
+                        .email("newUser@email.com")
+                        .password("pass")
+                        .roles(Set.of(RoleType.ROLE_ADMIN))
+                        .build()
+        );
+
+        var actualResponse = mockMvc.perform(post("/api/public/account?role=ROLE_ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+
+        JsonAssert.assertJsonEquals(6L, userRepository.count());
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void whenFindAllUsers_thenReturnOkResponse() throws Exception {
 
@@ -436,7 +470,7 @@ public class UserControllerTest extends UserAbstractTest {
                 .getResponse()
                 .getContentAsString();
 
-        JsonAssert.assertJsonEquals(4L, userRepository.count());
+        JsonAssert.assertJsonEquals(5L, userRepository.count());
     }
 
     @Test
