@@ -642,8 +642,8 @@ public class HotelControllerTest extends HotelAbstractTest {
         var expectedResponse = hotelMapper.hotelListToResponseList(createAdditionalHotels(20, 6));
 
         var actualResponse = mockMvc.perform(get("/api/hotel/filter")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(filter)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

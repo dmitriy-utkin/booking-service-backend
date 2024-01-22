@@ -1,6 +1,5 @@
 package ru.example.booking.repository;
 
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import ru.example.booking.dao.Hotel;
 import ru.example.booking.dao.Room;
@@ -86,8 +85,4 @@ public interface RoomSpecification {
             return cb.equal(root.get(Room.Fields.id), id);
         };
     }
-
-
-
-
 }

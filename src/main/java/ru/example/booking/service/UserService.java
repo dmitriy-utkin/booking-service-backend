@@ -15,7 +15,6 @@ import ru.example.booking.mapper.UserMapper;
 import ru.example.booking.repository.UserRepository;
 import ru.example.booking.util.BeanUtils;
 
-import java.util.List;
 import java.util.Set;
 
 @Service

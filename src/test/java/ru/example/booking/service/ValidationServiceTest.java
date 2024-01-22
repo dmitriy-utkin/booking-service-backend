@@ -34,7 +34,8 @@ public class ValidationServiceTest extends AbstractMainTest {
         try {
             validationService.isValidAction(userRequester, userOwner);
         } catch (AccessDeniedException e) {
-            actualResult = new ErrorResponse("AccessDenied");;
+            actualResult = new ErrorResponse("AccessDenied");
+            ;
         }
 
         JsonAssert.assertJsonEquals(expectedResult, actualResult);

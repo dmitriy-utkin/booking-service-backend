@@ -28,7 +28,7 @@ public class HotelService {
     public HotelResponseList findAll(FindAllSettings settings) {
         return hotelMapper.hotelListToResponseList(
                 hotelRepository.findAll(HotelSpecification.withFilter(settings.getHotelFilter()),
-                PageRequest.of(settings.getPageNum(), settings.getPageSize())).getContent()
+                        PageRequest.of(settings.getPageNum(), settings.getPageSize())).getContent()
         );
     }
 

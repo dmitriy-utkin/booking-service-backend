@@ -7,10 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ru.example.booking.service.ReservationService;
 import ru.example.booking.dto.reservation.ReservationResponse;
 import ru.example.booking.dto.reservation.ReservationResponseList;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
+import ru.example.booking.service.ReservationService;
 
 @RestController
 @RequestMapping("/api/reservation")
@@ -27,7 +27,7 @@ public class ReservationController {
 
     @GetMapping("/{id}")
     public ReservationResponse findById(@PathVariable("id") Long id,
-                                                        @AuthenticationPrincipal UserDetails userDetails) {
+                                        @AuthenticationPrincipal UserDetails userDetails) {
         return reservationService.findById(id, userDetails.getUsername());
     }
 
@@ -40,8 +40,8 @@ public class ReservationController {
 
     @PutMapping("/{id}")
     public ReservationResponse updateReservation(@PathVariable("id") Long id,
-                                                                 @RequestBody UpsertReservationRequest request,
-                                                                 @AuthenticationPrincipal UserDetails userDetails) {
+                                                 @RequestBody UpsertReservationRequest request,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
         return reservationService.update(id, request, userDetails.getUsername());
     }
 

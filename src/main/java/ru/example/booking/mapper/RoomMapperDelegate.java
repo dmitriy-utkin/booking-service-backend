@@ -2,8 +2,8 @@ package ru.example.booking.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.example.booking.dao.Room;
-import ru.example.booking.service.HotelService;
 import ru.example.booking.dto.room.UpsertRoomRequest;
+import ru.example.booking.service.HotelService;
 
 public abstract class RoomMapperDelegate implements RoomMapper {
 

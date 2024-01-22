@@ -12,9 +12,9 @@ public class ReservationAbstractTest extends AbstractMainTest {
 
         createDefaultReservationListWithStepByCounter(5, true).forEach(
                 reservation -> reservationService.booking(UpsertReservationRequest.builder()
-                                .roomId(reservation.getId())
-                                .checkInDate(LocalDatesUtil.localDateToStr(reservation.getCheckInDate(), DATE_PATTERN))
-                                .checkOutDate(LocalDatesUtil.localDateToStr(reservation.getCheckOutDate(), DATE_PATTERN))
+                        .roomId(reservation.getId())
+                        .checkInDate(LocalDatesUtil.localDateToStr(reservation.getCheckInDate(), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(reservation.getCheckOutDate(), DATE_PATTERN))
                         .build(), reservation.getUser().getUsername())
         );
     }

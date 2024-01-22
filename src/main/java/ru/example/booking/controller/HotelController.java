@@ -9,12 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.dto.defaults.FindAllSettings;
-import ru.example.booking.mapper.HotelMapper;
-import ru.example.booking.service.HotelService;
 import ru.example.booking.dto.hotel.CreateHotelRequest;
 import ru.example.booking.dto.hotel.HotelResponse;
 import ru.example.booking.dto.hotel.HotelResponseList;
 import ru.example.booking.dto.hotel.UpdateHotelRequest;
+import ru.example.booking.service.HotelService;
 
 @RestController
 @RequestMapping("/api/hotel")
@@ -48,7 +47,7 @@ public class HotelController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public HotelResponse update(@PathVariable("id") Long id,
-                                                @Valid @RequestBody UpdateHotelRequest request) {
+                                @Valid @RequestBody UpdateHotelRequest request) {
         return hotelService.updateById(id, request);
     }
 
@@ -61,7 +60,7 @@ public class HotelController {
 
     @PutMapping("/rate/{id}")
     public HotelResponse updateRating(@PathVariable("id") Long id,
-                                                      @RequestParam @Min(1) @Max(5) Integer newRating) {
+                                      @RequestParam @Min(1) @Max(5) Integer newRating) {
         return hotelService.updateRating(id, newRating);
     }
 }

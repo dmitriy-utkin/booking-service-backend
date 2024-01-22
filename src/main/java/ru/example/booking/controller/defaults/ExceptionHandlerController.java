@@ -9,10 +9,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.example.booking.dto.defaults.ErrorResponse;
 import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.exception.RoomBookingException;
-import ru.example.booking.dto.defaults.ErrorResponse;
 
 import java.util.List;
 

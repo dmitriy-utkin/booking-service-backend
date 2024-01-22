@@ -90,6 +90,4 @@ public interface HotelSpecification {
     }
 
 
-
-
 }

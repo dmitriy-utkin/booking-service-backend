@@ -3,12 +3,12 @@ package ru.example.booking.service;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
 import ru.example.booking.abstracts.ReservationAbstractTest;
-import ru.example.booking.dto.reservation.UpsertReservationRequest;
-import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.dao.Reservation;
 import ru.example.booking.dao.RoleType;
 import ru.example.booking.dao.RoomDescription;
 import ru.example.booking.dto.defaults.ErrorResponse;
+import ru.example.booking.dto.reservation.UpsertReservationRequest;
+import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.util.LocalDatesUtil;
 
 import java.time.LocalDate;
