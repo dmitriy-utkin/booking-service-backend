@@ -1,8 +1,10 @@
 package ru.example.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.example.booking.dao.Hotel;
+import ru.example.booking.dto.defaults.FindAllSettings;
 import ru.example.booking.dto.hotel.CreateHotelRequest;
 import ru.example.booking.dto.hotel.HotelResponse;
 import ru.example.booking.dto.hotel.HotelResponseList;
@@ -11,9 +13,9 @@ import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.mapper.HotelMapper;
 import ru.example.booking.repository.HotelRepository;
+import ru.example.booking.repository.HotelSpecification;
 import ru.example.booking.util.BeanUtils;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,12 @@ public class HotelService {
 
     private final HotelMapper hotelMapper;
 
+    public HotelResponseList findAll(FindAllSettings settings) {
+        return hotelMapper.hotelListToResponseList(
+                hotelRepository.findAll(HotelSpecification.withFilter(settings.getHotelFilter()),
+                PageRequest.of(settings.getPageNum(), settings.getPageSize())).getContent()
+        );
+    }
 
     public HotelResponseList findAll() {
         return hotelMapper.hotelListToResponseList(hotelRepository.findAll());

@@ -8,8 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.example.booking.abstracts.HotelAbstractTest;
 import ru.example.booking.dto.defaults.ErrorResponse;
+import ru.example.booking.dto.defaults.FindAllSettings;
+import ru.example.booking.dto.defaults.HotelFilter;
 import ru.example.booking.dto.hotel.CreateHotelRequest;
+import ru.example.booking.dto.hotel.HotelResponseList;
 import ru.example.booking.dto.hotel.UpdateHotelRequest;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -565,10 +571,449 @@ public class HotelControllerTest extends HotelAbstractTest {
                 .getContentAsString();
     }
 
-
     @Test
     public void whenUpdateHotelRatingWithoutLogging_thenReturnError() throws Exception {
         mockMvc.perform(put("/api/hotel/rate/1?newRating=5"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void whenFindAllWithFilterWithoutAuthorization_thenReturnError() throws Exception {
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .numberOfRatings(6)
+                        .build())
+                .build();
+
+        mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterByNumberOfRatingWithUserRole_thenReturnCorrectListSize() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .numberOfRatings(6)
+                        .build())
+                .build();
+
+        var expectedResponse = hotelMapper.hotelListToResponseList(createAdditionalHotels(20, 6));
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByNumberOfRating_thenReturnCorrectListSize() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .numberOfRatings(6)
+                        .build())
+                .build();
+
+        var expectedResponse = hotelMapper.hotelListToResponseList(createAdditionalHotels(20, 6));
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByNumberOfRatingAndPageSizeLimit_thenReturnCorrectListSize() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(10)
+                .hotelFilter(HotelFilter.builder()
+                        .numberOfRatings(6)
+                        .build())
+                .build();
+
+        var expectedResponse = hotelMapper.hotelListToResponseList(createAdditionalHotels(10, 6));
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByNumberOfRatingAndPageSizeLimitAndSecondPageNum_thenReturnCorrectListSize()
+            throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(1)
+                .pageSize(15)
+                .hotelFilter(HotelFilter.builder()
+                        .numberOfRatings(6)
+                        .build())
+                .build();
+
+        var expectedResponse = hotelMapper.hotelListToResponseList(createAdditionalHotels(5, 21));
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByNumberOfRatingAndRatingMoreOrEq10_thenReturnCorrectListSize() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .numberOfRatings(6)
+                        .rating(10F)
+                        .build())
+                .build();
+
+        var expectedResponse = hotelMapper.hotelListToResponseList(createAdditionalHotels(16, 10));
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByRatingMoreOrEq16_thenReturnCorrectListSize() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .rating(16F)
+                        .build())
+                .build();
+
+        var expectedResponse = hotelMapper.hotelListToResponseList(createAdditionalHotels(10, 16));
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByHeadline_thenReturnCorrectListSize() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .headline("Hotel headline 6")
+                        .build())
+                .build();
+
+        var expectedResponse = HotelResponseList.builder()
+                .hotels(List.of(hotelMapper.hotelToResponse(createDefaultHotel(6))))
+                .build();
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByCity_thenReturnCorrectListSize() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .city("Hotel city location 1")
+                        .build())
+                .build();
+
+        var expectedResponse = HotelResponseList.builder()
+                .hotels(List.of(hotelMapper.hotelToResponse(createDefaultHotel(1))))
+                .build();
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByAddress_thenReturnCorrectListSize() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .address("Hotel address 5")
+                        .build())
+                .build();
+
+        var expectedResponse = HotelResponseList.builder()
+                .hotels(List.of(hotelMapper.hotelToResponse(createDefaultHotel(5))))
+                .build();
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByAddressAndCity_thenReturnEmptyList() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .address("Hotel address 5")
+                        .city("Hotel city location 1")
+                        .build())
+                .build();
+
+        var expectedResponse = HotelResponseList.builder()
+                .hotels(Collections.emptyList())
+                .build();
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByADistance_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .distance(5F)
+                        .build())
+                .build();
+
+        var expectedResponse = hotelMapper.hotelListToResponseList(createDefaultHotelList(5));
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByADistanceAndRating_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .distance(5F)
+                        .rating(3F)
+                        .build())
+                .build();
+
+        var expectedResponse = hotelMapper.hotelListToResponseList(createAdditionalHotels(3, 3));
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByDistanceAndRating_thenReturnEmptyList() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .distance(5F)
+                        .rating(6F)
+                        .build())
+                .build();
+
+        var expectedResponse = HotelResponseList.builder()
+                .hotels(Collections.emptyList())
+                .build();
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterByHotelName_thenReturnEmptyList() throws Exception {
+
+        saveAdditionalHotels(20);
+
+        JsonAssert.assertJsonEquals(25L, hotelRepository.count());
+
+        var filter = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .hotelFilter(HotelFilter.builder()
+                        .name("Hotel 1")
+                        .build())
+                .build();
+
+        var expectedResponse = HotelResponseList.builder()
+                .hotels(List.of(hotelMapper.hotelToResponse(createDefaultHotel(1))))
+                .build();
+
+        var actualResponse = mockMvc.perform(get("/api/hotel/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 }

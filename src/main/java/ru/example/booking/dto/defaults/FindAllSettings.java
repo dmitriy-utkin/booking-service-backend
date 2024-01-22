@@ -18,6 +18,9 @@ public class FindAllSettings {
     private int pageNum = 0;
 
     @Builder.Default
-    private Filter filter = new Filter();
+    private HotelFilter hotelFilter = new HotelFilter();
+
+    @Builder.Default
+    private RoomFilter roomFilter = new RoomFilter();
 
 }

@@ -2,8 +2,10 @@ package ru.example.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.example.booking.dao.Room;
+import ru.example.booking.dto.defaults.FindAllSettings;
 import ru.example.booking.dto.room.RoomResponse;
 import ru.example.booking.dto.room.RoomResponseList;
 import ru.example.booking.dto.room.UpsertRoomRequest;
@@ -12,6 +14,7 @@ import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.mapper.RoomMapper;
 import ru.example.booking.repository.RoomRepository;
+import ru.example.booking.repository.RoomSpecification;
 import ru.example.booking.util.BeanUtils;
 import ru.example.booking.util.LocalDatesUtil;
 
@@ -31,6 +34,13 @@ public class RoomService {
 
     public RoomResponseList findAll() {
         return roomMapper.roomListToResponseList(roomRepository.findAll());
+    }
+
+    public RoomResponseList findAll(FindAllSettings settings) {
+        return roomMapper.roomListToResponseList(
+                roomRepository.findAll(RoomSpecification.withFilter(settings.getRoomFilter()),
+                        PageRequest.of(settings.getPageNum(), settings.getPageSize())).getContent()
+        );
     }
 
     public RoomResponse findById(Long id) {

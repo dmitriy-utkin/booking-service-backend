@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ru.example.booking.dto.defaults.FindAllSettings;
 import ru.example.booking.mapper.HotelMapper;
 import ru.example.booking.service.HotelService;
 import ru.example.booking.dto.hotel.CreateHotelRequest;
@@ -25,6 +26,11 @@ public class HotelController {
     @GetMapping
     public HotelResponseList findAll() {
         return hotelService.findAll();
+    }
+
+    @GetMapping("/filter")
+    public HotelResponseList findAllWithFilter(@RequestBody FindAllSettings settings) {
+        return hotelService.findAll(settings);
     }
 
     @GetMapping("/{id}")
