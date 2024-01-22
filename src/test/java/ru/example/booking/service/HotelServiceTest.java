@@ -9,9 +9,11 @@ public class HotelServiceTest extends HotelAbstractTest {
     @Test
     public void whenUpdateHotelRating_thenReturnRating3() {
 
-        var expectedResult = createDefaultHotel(1);
-        expectedResult.setRating(3F);
-        expectedResult.setNumberOfRatings(2);
+        var hotelResult = createDefaultHotel(1);
+        hotelResult.setRating(3F);
+        hotelResult.setNumberOfRatings(2);
+
+        var expectedResult = hotelMapper.hotelToResponse(hotelResult);
 
         var actualResult = hotelService.updateRating(1L, 5);
 
@@ -21,9 +23,10 @@ public class HotelServiceTest extends HotelAbstractTest {
     @Test
     public void whenUpdateHotelRating_thenReturnRating2_5() {
 
-        var expectedResult = createDefaultHotel(1);
-        expectedResult.setRating(2.5F);
-        expectedResult.setNumberOfRatings(2);
+        var hotelResult = createDefaultHotel(1);
+        hotelResult.setRating(2.5F);
+        hotelResult.setNumberOfRatings(2);
+        var expectedResult = hotelMapper.hotelToResponse(hotelResult);
 
         var actualResult = hotelService.updateRating(1L, 4);
 

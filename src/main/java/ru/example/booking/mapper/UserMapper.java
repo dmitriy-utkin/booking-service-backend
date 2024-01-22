@@ -2,11 +2,11 @@ package ru.example.booking.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-import ru.example.booking.model.User;
-import ru.example.booking.web.model.user.CreateUserRequest;
-import ru.example.booking.web.model.user.UpdateUserRequest;
-import ru.example.booking.web.model.user.UserResponse;
-import ru.example.booking.web.model.user.UserResponseList;
+import ru.example.booking.dao.User;
+import ru.example.booking.dto.user.CreateUserRequest;
+import ru.example.booking.dto.user.UpdateUserRequest;
+import ru.example.booking.dto.user.UserResponse;
+import ru.example.booking.dto.user.UserResponseList;
 
 import java.util.List;
 

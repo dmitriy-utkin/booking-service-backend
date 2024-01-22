@@ -10,7 +10,7 @@ public class HotelAbstractTest extends AbstractMainTest {
         resetSequence();
 
         for (int i = 1; i <= 5; i++) {
-            hotelService.save(createDefaultHotel(i));
+            hotelRepository.save(createDefaultHotel(i));
         }
     }
 }

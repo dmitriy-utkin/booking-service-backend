@@ -10,7 +10,7 @@ public class RoomAbstractTest extends AbstractMainTest {
         resetSequence();
 
         createDefaultRoomList(true).forEach(
-                roomService::save
+                roomRepository::save
         );
     }
 }

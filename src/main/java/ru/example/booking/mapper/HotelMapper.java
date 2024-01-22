@@ -2,11 +2,11 @@ package ru.example.booking.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-import ru.example.booking.model.Hotel;
-import ru.example.booking.web.model.hotel.CreateHotelRequest;
-import ru.example.booking.web.model.hotel.HotelResponse;
-import ru.example.booking.web.model.hotel.HotelResponseList;
-import ru.example.booking.web.model.hotel.UpdateHotelRequest;
+import ru.example.booking.dao.Hotel;
+import ru.example.booking.dto.hotel.CreateHotelRequest;
+import ru.example.booking.dto.hotel.HotelResponse;
+import ru.example.booking.dto.hotel.HotelResponseList;
+import ru.example.booking.dto.hotel.UpdateHotelRequest;
 
 import java.text.DecimalFormat;
 import java.util.List;

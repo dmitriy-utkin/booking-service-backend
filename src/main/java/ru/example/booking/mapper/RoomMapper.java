@@ -3,10 +3,10 @@ package ru.example.booking.mapper;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-import ru.example.booking.model.Room;
-import ru.example.booking.web.model.room.RoomResponse;
-import ru.example.booking.web.model.room.RoomResponseList;
-import ru.example.booking.web.model.room.UpsertRoomRequest;
+import ru.example.booking.dao.Room;
+import ru.example.booking.dto.room.RoomResponse;
+import ru.example.booking.dto.room.RoomResponseList;
+import ru.example.booking.dto.room.UpsertRoomRequest;
 
 import java.util.List;
 

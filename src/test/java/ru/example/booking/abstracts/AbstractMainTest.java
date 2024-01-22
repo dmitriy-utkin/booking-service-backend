@@ -23,17 +23,14 @@ import ru.example.booking.mapper.HotelMapper;
 import ru.example.booking.mapper.ReservationMapper;
 import ru.example.booking.mapper.RoomMapper;
 import ru.example.booking.mapper.UserMapper;
-import ru.example.booking.model.*;
+import ru.example.booking.dao.*;
 import ru.example.booking.repository.HotelRepository;
 import ru.example.booking.repository.ReservationRepository;
 import ru.example.booking.repository.RoomRepository;
 import ru.example.booking.repository.UserRepository;
-import ru.example.booking.service.HotelService;
-import ru.example.booking.service.ReservationService;
-import ru.example.booking.service.RoomService;
-import ru.example.booking.service.UserService;
-import ru.example.booking.web.controller.ReservationController;
-import ru.example.booking.web.model.defaults.ErrorResponse;
+import ru.example.booking.service.*;
+import ru.example.booking.controller.ReservationController;
+import ru.example.booking.dto.defaults.ErrorResponse;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -55,6 +52,8 @@ import java.util.stream.Stream;
 @Testcontainers
 public class AbstractMainTest {
 
+    protected static final String DATE_PATTERN = "dd/MM/yyyy";
+
     @Autowired
     protected HotelRepository hotelRepository;
 
@@ -72,6 +71,9 @@ public class AbstractMainTest {
 
     @Autowired
     protected UserService userService;
+
+    @Autowired
+    protected ValidationService validationService;
 
     @Autowired
     protected UserRepository userRepository;
@@ -119,6 +121,7 @@ public class AbstractMainTest {
         registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+        registry.add("app.dateFormat", () -> DATE_PATTERN);
     }
 
     @AfterEach
@@ -216,7 +219,7 @@ public class AbstractMainTest {
 
     protected Room createDefaultRoomWithoutBookedDates(int roomNum, RoomDescription description, boolean withHotelSaving) {
 
-        Hotel hotel = withHotelSaving ? hotelService.save(createDefaultHotel(roomNum)) : createDefaultHotel(roomNum);
+        Hotel hotel = withHotelSaving ? hotelRepository.save(createDefaultHotel(roomNum)) : createDefaultHotel(roomNum);
 
         return Room.builder()
                 .id((long) roomNum)

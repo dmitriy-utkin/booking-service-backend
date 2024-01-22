@@ -4,9 +4,9 @@ import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
 import ru.example.booking.abstracts.RoomAbstractTest;
 import ru.example.booking.exception.RoomBookingException;
-import ru.example.booking.model.Room;
-import ru.example.booking.model.RoomDescription;
-import ru.example.booking.web.model.defaults.ErrorResponse;
+import ru.example.booking.dao.Room;
+import ru.example.booking.dao.RoomDescription;
+import ru.example.booking.dto.defaults.ErrorResponse;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,7 +44,7 @@ public class RoomServiceTest extends RoomAbstractTest {
         var bookingDayToBeDeleted = LocalDate.now();
         var bookingDayToBeDeletedStr = bookingDayToBeDeleted.format(dateFormatter);
 
-        var savedRoom = roomService.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
+        var savedRoom = roomRepository.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
 
         var expectedResult = Room.builder()
                 .id(savedRoom.getId())
@@ -71,7 +71,7 @@ public class RoomServiceTest extends RoomAbstractTest {
         var bookingDayToBeDeleted = LocalDate.now().plusDays(3);
         var bookingDayToBeDeletedStr = bookingDayToBeDeleted.format(dateFormatter);
 
-        var savedRoom = roomService.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
+        var savedRoom = roomRepository.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
 
         var expectedResult = new ErrorResponse("This date/s is not booked");
 
@@ -93,7 +93,7 @@ public class RoomServiceTest extends RoomAbstractTest {
         var bookingDay = LocalDate.now();
         var bookingDayStr = bookingDay.format(dateFormatter);
 
-        var savedRoom = roomService.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
+        var savedRoom = roomRepository.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
 
         var expectedResult = new ErrorResponse("This dates is unavailable");
 

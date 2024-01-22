@@ -2,9 +2,9 @@ package ru.example.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.example.booking.model.Reservation;
-import ru.example.booking.model.Room;
-import ru.example.booking.model.User;
+import ru.example.booking.dao.Reservation;
+import ru.example.booking.dao.Room;
+import ru.example.booking.dao.User;
 
 import java.time.LocalDate;
 import java.util.Optional;

@@ -11,5 +11,3 @@ spring:
 app:
   uploading:
     mockHotelPath:
-
-  dateFormat: 'dd/MM/yyyy'

@@ -1,6 +1,8 @@
 package ru.example.booking.abstracts;
 
 import org.junit.jupiter.api.BeforeEach;
+import ru.example.booking.dto.reservation.UpsertReservationRequest;
+import ru.example.booking.util.LocalDatesUtil;
 
 public class ReservationAbstractTest extends AbstractMainTest {
 
@@ -9,7 +11,11 @@ public class ReservationAbstractTest extends AbstractMainTest {
         resetSequence();
 
         createDefaultReservationListWithStepByCounter(5, true).forEach(
-                reservation -> reservationService.booking(reservation, reservation.getUser().getUsername())
+                reservation -> reservationService.booking(UpsertReservationRequest.builder()
+                                .roomId(reservation.getId())
+                                .checkInDate(LocalDatesUtil.localDateToStr(reservation.getCheckInDate(), DATE_PATTERN))
+                                .checkOutDate(LocalDatesUtil.localDateToStr(reservation.getCheckOutDate(), DATE_PATTERN))
+                        .build(), reservation.getUser().getUsername())
         );
     }
 }
