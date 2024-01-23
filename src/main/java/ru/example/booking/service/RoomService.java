@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.example.booking.dao.Room;
 import ru.example.booking.dto.defaults.FindAllSettings;
+import ru.example.booking.dto.defaults.RoomFilter;
 import ru.example.booking.dto.room.RoomResponse;
 import ru.example.booking.dto.room.RoomResponseList;
 import ru.example.booking.dto.room.UpsertRoomRequest;
@@ -40,6 +41,14 @@ public class RoomService {
     }
 
     public RoomResponseList findAll(FindAllSettings settings) {
+
+        if (settings.getRoomFilter().getCheckInDate() != null && settings.getRoomFilter().getCheckOutDate() != null) {
+            settings.getRoomFilter().setDates(getDateList(
+                    LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckInDate(), datePattern),
+                    LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckOutDate(), datePattern))
+            );
+        }
+
         return roomMapper.roomListToResponseList(
                 roomRepository.findAll(RoomSpecification.withFilter(settings.getRoomFilter()),
                         PageRequest.of(settings.getPageNum(), settings.getPageSize())).getContent()
@@ -111,7 +120,7 @@ public class RoomService {
 
         existedDates.addAll(datesToBeChecked);
         existedRoom.setBookedDates(existedDates);
-        return roomMapper.roomToResponse(existedRoom);
+        return roomMapper.roomToResponse(roomRepository.save(existedRoom));
     }
 
     public RoomResponse deleteBookedDates(Long roomId, String from, String to) {
@@ -136,7 +145,7 @@ public class RoomService {
 
         existedDates.removeAll(datesToBeChecked);
         existedRoom.setBookedDates(existedDates);
-        return roomMapper.roomToResponse(existedRoom);
+        return roomMapper.roomToResponse(roomRepository.save(existedRoom));
     }
 
     public boolean isAvailableDates(Set<LocalDate> existedDates, Set<LocalDate> datesToBeChecked) {

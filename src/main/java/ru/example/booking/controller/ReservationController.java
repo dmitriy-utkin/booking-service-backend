@@ -32,10 +32,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody UpsertReservationRequest request,
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createReservation(@RequestBody UpsertReservationRequest request,
                                                                  @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                reservationService.booking(request, userDetails.getUsername()));
+        reservationService.booking(request, userDetails.getUsername());
     }
 
     @PutMapping("/{id}")
@@ -46,9 +46,9 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancel(@PathVariable("id") Long id,
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancel(@PathVariable("id") Long id,
                                        @AuthenticationPrincipal UserDetails userDetails) {
         reservationService.cancel(id, userDetails.getUsername());
-        return ResponseEntity.noContent().build();
     }
 }

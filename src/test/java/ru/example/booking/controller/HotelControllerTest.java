@@ -53,7 +53,7 @@ public class HotelControllerTest extends HotelAbstractTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    public void whenSaveHotel_thenReturnHotelAndIncreaseRepositoryCount() throws Exception {
+    public void whenSaveHotel_thenReturnStatusCreatedAndIncreaseRepositoryCount() throws Exception {
 
         JsonAssert.assertJsonEquals(5L, hotelRepository.count());
 
@@ -65,19 +65,12 @@ public class HotelControllerTest extends HotelAbstractTest {
                 .distance(1F)
                 .build();
 
-        var expectedResponse = hotelMapper.hotelToResponse(hotelMapper.createRequestToHotel(createRequest));
-        expectedResponse.setId(6L);
-
-        var actualResponse = mockMvc.perform(post("/api/hotel")
+        mockMvc.perform(post("/api/hotel")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createRequest)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(status().isCreated());
 
         JsonAssert.assertJsonEquals(6L, hotelRepository.count());
-        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 
     @Test

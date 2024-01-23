@@ -17,6 +17,6 @@ spring:
 
 app:
   uploading:
-    mockHotelPath:
+    mockHotelPath: src/main/resources/data/data.json
 
   dateFormat: "dd/MM/yyyy"

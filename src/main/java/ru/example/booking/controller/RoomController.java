@@ -36,8 +36,9 @@ public class RoomController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RoomResponse> save(@Valid @RequestBody UpsertRoomRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roomService.save(request));
+    @ResponseStatus(HttpStatus.CREATED)
+    public void save(@Valid @RequestBody UpsertRoomRequest request) {
+        roomService.save(request);
     }
 
     @PutMapping("/{id}")
@@ -48,8 +49,8 @@ public class RoomController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("id") Long id) {
         roomService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }

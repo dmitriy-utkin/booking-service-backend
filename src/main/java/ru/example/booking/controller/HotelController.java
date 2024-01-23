@@ -39,9 +39,9 @@ public class HotelController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<HotelResponse> save(@Valid @RequestBody CreateHotelRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                hotelService.save(request));
+    @ResponseStatus(HttpStatus.CREATED)
+    public void save(@Valid @RequestBody CreateHotelRequest request) {
+        hotelService.save(request);
     }
 
     @PutMapping("/{id}")
@@ -53,9 +53,9 @@ public class HotelController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable("id") Long id) {
         hotelService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/rate/{id}")

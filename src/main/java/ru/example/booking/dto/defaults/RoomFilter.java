@@ -1,5 +1,6 @@
 package ru.example.booking.dto.defaults;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +9,7 @@ import ru.example.booking.dao.RoomDescription;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -25,9 +27,12 @@ public class RoomFilter {
 
     private Integer capacity;
 
-    private LocalDate checkInDate;
+    private String checkInDate;
 
-    private LocalDate checkOutDate;
+    private String checkOutDate;
+
+    @JsonIgnore
+    private Set<LocalDate> dates;
 
     private Long hotelId;
 }

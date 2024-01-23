@@ -1,13 +1,19 @@
 package ru.example.booking.repository;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import ru.example.booking.dao.Hotel;
 import ru.example.booking.dao.Room;
 import ru.example.booking.dao.RoomDescription;
 import ru.example.booking.dto.defaults.RoomFilter;
+import ru.example.booking.util.LocalDatesUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public interface RoomSpecification {
 
@@ -16,23 +22,19 @@ public interface RoomSpecification {
                 .and(byRoomDescription(filter.getDescription()))
                 .and(byRoomPrice(filter.getMinPrice(), filter.getMaxPrice()))
                 .and(byRoomCapacity(filter.getCapacity()))
-                .and(byCheckInOutDates(filter.getCheckInDate(), filter.getCheckOutDate()))
+                .and(byCheckInOutDates(filter.getDates()))
                 .and(byRoomHotelId(filter.getHotelId()));
     }
 
-    static Specification<Room> byCheckInOutDates(LocalDate checkInDate, LocalDate checkOutDate) {
+    static Specification<Room> byCheckInOutDates(Set<LocalDate> dates) {
+
         return (root, query, cb) -> {
-            if (checkInDate == null || checkOutDate == null) {
+            if (dates == null) {
                 return null;
             }
-            return cb.or(
-                    cb.isEmpty(root.get(Room.Fields.bookedDates)),
-                    cb.or(
-                            cb.greaterThan(root.get(Room.Fields.bookedDates).as(LocalDate.class), checkOutDate),
-                            cb.lessThan(root.get(Room.Fields.bookedDates).as(LocalDate.class), checkInDate)
-                    )
-            );
+            return cb.isNotMember(dates, root.get(Room.Fields.bookedDates));
         };
+
     }
 
     static Specification<Room> byRoomHotelId(Long hotelId) {

@@ -7,11 +7,18 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.example.booking.abstracts.RoomAbstractTest;
+import ru.example.booking.dao.Room;
 import ru.example.booking.dao.RoomDescription;
 import ru.example.booking.dto.defaults.ErrorResponse;
+import ru.example.booking.dto.defaults.FindAllSettings;
+import ru.example.booking.dto.defaults.RoomFilter;
 import ru.example.booking.dto.room.UpsertRoomRequest;
+import ru.example.booking.util.LocalDatesUtil;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -81,18 +88,11 @@ public class RoomControllerTest extends RoomAbstractTest {
                 .number(1)
                 .build();
 
-        var expectedResponse = roomMapper.requestToRoom(request);
-        expectedResponse.setId(6L);
-
-        var actualResponse = mockMvc.perform(post("/api/room")
+        mockMvc.perform(post("/api/room")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(status().isCreated());
 
-        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
         JsonAssert.assertJsonEquals(6L, roomRepository.count());
     }
 
@@ -420,5 +420,396 @@ public class RoomControllerTest extends RoomAbstractTest {
 
         JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
         JsonAssert.assertJsonEquals(5L, roomRepository.count());
+    }
+
+    @Test
+    public void whenFindAllWithFilterWithoutLogging_thenReturnError() throws Exception {
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .capacity(5)
+                        .build())
+                .build();
+
+        mockMvc.perform(get("/api/room/filter")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void whenFindAllWithFilterWithAdminRole_thenReturnOk() throws Exception {
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .capacity(5)
+                        .build())
+                .build();
+
+        mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"user"})
+    public void whenFindAllWithFilterWithUserRole_thenReturnOk() throws Exception {
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .capacity(5)
+                        .build())
+                .build();
+
+        mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByCapacity_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .capacity(6)
+                        .build())
+                .build();
+
+        var expectedResponse = roomMapper.roomListToResponseList(
+                List.of(createDefaultRoomWithoutBookedDates(6, RoomDescription.STANDARD, false))
+        );
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterById_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .id(1L)
+                        .build())
+                .build();
+
+        var expectedResponse = roomMapper.roomListToResponseList(
+                List.of(createDefaultRoomWithoutBookedDates(1, RoomDescription.STANDARD, false))
+        );
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByMinPrice_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .minPrice(BigDecimal.valueOf(6))
+                        .build())
+                .build();
+
+        var expectedResponse = roomMapper.roomListToResponseList(
+                createAdditionalRooms(6, 20)
+        );
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByMaxPrice_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .maxPrice(BigDecimal.valueOf(5))
+                        .build())
+                .build();
+
+        var expectedResponse = roomMapper.roomListToResponseList(
+                createDefaultRoomList(false)
+        );
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByMaxAndMinPrice_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .minPrice(BigDecimal.valueOf(6))
+                        .maxPrice(BigDecimal.valueOf(10))
+                        .build())
+                .build();
+
+        var expectedResponse = roomMapper.roomListToResponseList(
+                createAdditionalRooms(6, 4)
+        );
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByRoomDescriptionStandard_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .description(RoomDescription.STANDARD)
+                        .build())
+                .build();
+
+        List<Room> roomList = roomRepository.findAll().stream()
+                .filter(room -> room.getDescription().equals(RoomDescription.STANDARD))
+                .toList();
+
+        var expectedResponse = roomMapper.roomListToResponseList(roomList);
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByRoomDescriptionSuite_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .description(RoomDescription.SUITE)
+                        .build())
+                .build();
+
+        List<Room> roomList = roomRepository.findAll().stream()
+                .filter(room -> room.getDescription().equals(RoomDescription.SUITE))
+                .toList();
+
+        var expectedResponse = roomMapper.roomListToResponseList(roomList);
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByRoomDescriptionPresident_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .description(RoomDescription.PRESIDENT)
+                        .build())
+                .build();
+
+        List<Room> roomList = roomRepository.findAll().stream()
+                .filter(room -> room.getDescription().equals(RoomDescription.PRESIDENT))
+                .toList();
+
+        var expectedResponse = roomMapper.roomListToResponseList(roomList);
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByRoomDescriptionSuperior_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .description(RoomDescription.SUPERIOR)
+                        .build())
+                .build();
+
+        List<Room> roomList = roomRepository.findAll().stream()
+                .filter(room -> room.getDescription().equals(RoomDescription.SUPERIOR))
+                .toList();
+
+        var expectedResponse = roomMapper.roomListToResponseList(roomList);
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByHotelId_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .hotelId(1L)
+                        .build())
+                .build();
+
+        var expectedResponse = roomMapper.roomListToResponseList(
+                List.of(createDefaultRoomWithoutBookedDates(1, RoomDescription.STANDARD, false))
+        );
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithFilterWithFilterByCheckInOutDate_thenReturnCorrectList() throws Exception {
+
+        saveAdditionalRooms(20);
+
+        roomRepository.findAll().forEach(
+                room -> {
+                    roomService.addBookedDates(
+                            room.getId(),
+                            LocalDatesUtil.localDateToStr(LocalDate.now(), DATE_PATTERN),
+                            LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(room.getId()), DATE_PATTERN));
+                }
+        );
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(5), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build())
+                .build();
+
+        List<Room> rooms = new ArrayList<>(createAdditionalRooms(3, 2));
+
+        var expectedResponse = roomMapper.roomListToResponseList(rooms);
+
+        var actualResponse = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 }

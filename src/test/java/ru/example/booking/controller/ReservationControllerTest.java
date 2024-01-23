@@ -194,25 +194,12 @@ public class ReservationControllerTest extends ReservationAbstractTest {
                 .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(5), DATE_PATTERN))
                 .build();
 
-        var expectedResponse = ReservationResponse.builder()
-                .id(6L)
-                .roomId(1L)
-                .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(3), DATE_PATTERN))
-                .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(5), DATE_PATTERN))
-                .userId(5L)
-                .userEmail("user5@email.com")
-                .build();
-
-        var actualResponse = mockMvc.perform(post("/api/reservation")
+        mockMvc.perform(post("/api/reservation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(status().isCreated());
 
         JsonAssert.assertJsonEquals(6L, reservationRepository.count());
-        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 
     @Test

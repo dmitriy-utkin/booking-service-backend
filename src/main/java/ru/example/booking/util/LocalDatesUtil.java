@@ -6,6 +6,8 @@ import ru.example.booking.exception.RoomBookingException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashSet;
+import java.util.Set;
 
 @UtilityClass
 public class LocalDatesUtil {

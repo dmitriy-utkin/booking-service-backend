@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class Room {
 
     private Integer capacity;
 
+//    @ElementCollection(targetClass = LocalDate.class, fetch = FetchType.EAGER)
     @Builder.Default
     private Set<LocalDate> bookedDates = new HashSet<>();
 

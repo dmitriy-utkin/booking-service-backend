@@ -41,9 +41,10 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> save(@RequestParam RoleType role,
+    @ResponseStatus(HttpStatus.CREATED)
+    public void save(@RequestParam RoleType role,
                                              @RequestBody CreateUserRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(role, request));
+        userService.save(role, request);
     }
 
     @PutMapping("/{id}")
@@ -53,9 +54,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id,
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails userDetails) {
         userService.deleteById(id, userDetails.getUsername());
-        return ResponseEntity.noContent().build();
     }
 }
