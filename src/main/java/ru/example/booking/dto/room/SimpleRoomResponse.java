@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.example.booking.dao.Hotel;
 import ru.example.booking.dao.RoomDescription;
 
 import java.math.BigDecimal;
@@ -22,7 +21,7 @@ public class RoomResponse {
 
     private String name;
 
-    private Hotel hotel;
+    private Long hotelId;
 
     private RoomDescription description;
 
