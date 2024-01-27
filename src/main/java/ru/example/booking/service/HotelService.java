@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.example.booking.dao.Hotel;
+import ru.example.booking.dao.Room;
 import ru.example.booking.dto.defaults.FindAllSettings;
 import ru.example.booking.dto.hotel.CreateHotelRequest;
 import ru.example.booking.dto.hotel.HotelResponse;
@@ -88,5 +89,13 @@ public class HotelService {
         return hotelRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Hotel not found, ID is " + id)
         );
+    }
+
+    public void addRoom(Room room) {
+        var existedHotel = findHotelById(room.getHotel().getId());
+        var rooms = existedHotel.getRooms();
+        rooms.add(room);
+        existedHotel.setRooms(rooms);
+        hotelRepository.save(existedHotel);
     }
 }

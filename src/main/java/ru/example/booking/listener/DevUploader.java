@@ -9,6 +9,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import ru.example.booking.dao.*;
+import ru.example.booking.dto.defaults.UploadObject;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.repository.HotelRepository;
@@ -17,7 +18,6 @@ import ru.example.booking.repository.RoomRepository;
 import ru.example.booking.repository.UserRepository;
 import ru.example.booking.service.ReservationService;
 import ru.example.booking.util.LocalDatesUtil;
-import ru.example.booking.dto.defaults.UploadObject;
 import ru.example.booking.util.UploadUtils;
 
 import java.math.BigDecimal;

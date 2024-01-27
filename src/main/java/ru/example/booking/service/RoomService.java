@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.example.booking.dao.Reservation;
 import ru.example.booking.dao.Room;
 import ru.example.booking.dto.defaults.FindAllSettings;
-import ru.example.booking.dto.defaults.RoomFilter;
-import ru.example.booking.dto.room.RoomResponse;
 import ru.example.booking.dto.room.RoomResponseList;
+import ru.example.booking.dto.room.SimpleRoomResponse;
 import ru.example.booking.dto.room.UpsertRoomRequest;
 import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
@@ -31,6 +31,8 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
 
+    private final HotelService hotelService;
+
     private final RoomMapper roomMapper;
 
     @Value("${app.dateFormat}")
@@ -43,10 +45,8 @@ public class RoomService {
     public RoomResponseList findAll(FindAllSettings settings) {
 
         if (settings.getRoomFilter().getCheckInDate() != null && settings.getRoomFilter().getCheckOutDate() != null) {
-            settings.getRoomFilter().setDates(getDateList(
-                    LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckInDate(), datePattern),
-                    LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckOutDate(), datePattern))
-            );
+            settings.getRoomFilter().setCheckInLocalDate(LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckInDate(), datePattern));
+            settings.getRoomFilter().setCheckOutLocalDate(LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckOutDate(), datePattern));
         }
 
         return roomMapper.roomListToResponseList(
@@ -55,8 +55,8 @@ public class RoomService {
         );
     }
 
-    public RoomResponse findById(Long id) {
-        return roomMapper.roomToResponse(findRoomById(id));
+    public SimpleRoomResponse findById(Long id) {
+        return roomMapper.roomToSimpleResponse(findRoomById(id));
     }
 
     public Room findRoomById(Long id) {
@@ -65,14 +65,14 @@ public class RoomService {
         );
     }
 
-    public RoomResponse findByName(String name) {
+    public SimpleRoomResponse findByName(String name) {
         var room = roomRepository.findByName(name).orElseThrow(
                 () -> new EntityNotFoundException("Room not found, name is " + name)
         );
-        return roomMapper.roomToResponse(room);
+        return roomMapper.roomToSimpleResponse(room);
     }
 
-    public RoomResponse updateById(Long id, UpsertRoomRequest request) {
+    public SimpleRoomResponse updateById(Long id, UpsertRoomRequest request) {
         if (!roomRepository.existsById(id)) {
             throw new EntityNotFoundException("Room not found, ID is " + id);
         }
@@ -81,14 +81,17 @@ public class RoomService {
         Room updatedRoom = roomMapper.requestToRoom(request);
         BeanUtils.copyNonNullProperties(updatedRoom, existedRoom);
 
-        return roomMapper.roomToResponse(roomRepository.save(existedRoom));
+        return roomMapper.roomToSimpleResponse(roomRepository.save(existedRoom));
     }
 
-    public RoomResponse save(UpsertRoomRequest request) {
+    public SimpleRoomResponse save(UpsertRoomRequest request) {
         if (roomRepository.existsByName(request.getName())) {
             throw new EntityAlreadyExists("Room with name \"" + request.getName() + "\" is already exists");
         }
-        return roomMapper.roomToResponse(roomRepository.save(roomMapper.requestToRoom(request)));
+
+        var room = roomMapper.requestToRoom(request);
+        hotelService.addRoom(room);
+        return roomMapper.roomToSimpleResponse(roomRepository.save(room));
     }
 
     public void deleteById(Long id) {
@@ -98,54 +101,54 @@ public class RoomService {
         roomRepository.deleteById(id);
     }
 
-    public RoomResponse addBookedDates(Long roomId, String from, String to) {
-        return addBookedDates(roomId, LocalDatesUtil.strDateToLocalDate(from, datePattern),
-                LocalDatesUtil.strDateToLocalDate(to, datePattern));
-    }
+    public SimpleRoomResponse addReservation(Reservation reservation) {
+        Room existedRoom = findRoomById(reservation.getRoom().getId());
 
-    public RoomResponse addBookedDates(Long roomId, LocalDate from, LocalDate to) {
-        Room existedRoom = findRoomById(roomId);
-
-        Map<Boolean, String> preValidation = preValidateDates(from, to);
+        Map<Boolean, String> preValidation = preValidateDates(reservation.getCheckInDate(), reservation.getCheckOutDate());
         if (preValidation.containsKey(false)) {
             throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
         }
 
         Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
-        Set<LocalDate> datesToBeChecked = new TreeSet<>(getDateList(from, to));
+        Set<LocalDate> datesToBeChecked = new TreeSet<>(getDateList(reservation.getCheckInDate(), reservation.getCheckOutDate()));
 
         if (!isAvailableDates(existedDates, datesToBeChecked)) {
             throw new RoomBookingException("This dates is unavailable");
         }
 
         existedDates.addAll(datesToBeChecked);
+
+        var existedReservations = existedRoom.getReservations();
+        existedReservations.add(reservation);
+
+        existedRoom.setReservations(existedReservations);
         existedRoom.setBookedDates(existedDates);
-        return roomMapper.roomToResponse(roomRepository.save(existedRoom));
+        return roomMapper.roomToSimpleResponse(roomRepository.save(existedRoom));
     }
 
-    public RoomResponse deleteBookedDates(Long roomId, String from, String to) {
-        return deleteBookedDates(roomId, LocalDatesUtil.strDateToLocalDate(from, datePattern),
-                LocalDatesUtil.strDateToLocalDate(to, datePattern));
-    }
+    public SimpleRoomResponse deleteReservation(Reservation reservation) {
+        Room existedRoom = findRoomById(reservation.getRoom().getId());
 
-    public RoomResponse deleteBookedDates(Long roomId, LocalDate from, LocalDate to) {
-        Room existedRoom = findRoomById(roomId);
-
-        Map<Boolean, String> preValidation = preValidateDates(from, to);
+        Map<Boolean, String> preValidation = preValidateDates(reservation.getCheckInDate(), reservation.getCheckOutDate());
         if (preValidation.containsKey(false)) {
             throw new RoomBookingException("Dates is incorrect: " + preValidation.get(false));
         }
 
         Set<LocalDate> existedDates = new TreeSet<>(existedRoom.getBookedDates());
-        Set<LocalDate> datesToBeChecked = getDateList(from, to);
+        Set<LocalDate> datesToBeChecked = getDateList(reservation.getCheckInDate(), reservation.getCheckOutDate());
 
         if (!isBookedDates(existedDates, datesToBeChecked)) {
             throw new RoomBookingException("This date/s is not booked");
         }
 
         existedDates.removeAll(datesToBeChecked);
+
+        var existedReservation = existedRoom.getReservations();
+        existedReservation.remove(reservation);
+
+        existedRoom.setReservations(existedReservation);
         existedRoom.setBookedDates(existedDates);
-        return roomMapper.roomToResponse(roomRepository.save(existedRoom));
+        return roomMapper.roomToSimpleResponse(roomRepository.save(existedRoom));
     }
 
     public boolean isAvailableDates(Set<LocalDate> existedDates, Set<LocalDate> datesToBeChecked) {

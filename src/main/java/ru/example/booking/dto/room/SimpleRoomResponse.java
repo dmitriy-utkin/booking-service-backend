@@ -7,15 +7,12 @@ import lombok.NoArgsConstructor;
 import ru.example.booking.dao.RoomDescription;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RoomResponse {
+public class SimpleRoomResponse {
 
     private Long id;
 
@@ -32,5 +29,5 @@ public class RoomResponse {
     private Integer capacity;
 
     @Builder.Default
-    private Set<LocalDate> bookedDates = new HashSet<>();
+    private Integer bookedDatesSize = 0;
 }

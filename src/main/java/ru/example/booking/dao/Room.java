@@ -2,13 +2,9 @@ package ru.example.booking.dao;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -44,13 +40,15 @@ public class Room {
 
     private Integer capacity;
 
-//    @ElementCollection(targetClass = LocalDate.class, fetch = FetchType.EAGER)
     @Builder.Default
+    @ToString.Exclude
     private Set<LocalDate> bookedDates = new HashSet<>();
 
     @Builder.Default
     @JsonIgnore
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "room_id")
+    @ToString.Exclude
     private List<Reservation> reservations = new ArrayList<>();
 
 }

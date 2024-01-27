@@ -9,7 +9,6 @@ import ru.example.booking.dao.RoomDescription;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -32,7 +31,10 @@ public class RoomFilter {
     private String checkOutDate;
 
     @JsonIgnore
-    private Set<LocalDate> dates;
+    private LocalDate checkInLocalDate;
+
+    @JsonIgnore
+    private LocalDate checkOutLocalDate;
 
     private Long hotelId;
 }

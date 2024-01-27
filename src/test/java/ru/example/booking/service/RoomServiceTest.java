@@ -3,13 +3,14 @@ package ru.example.booking.service;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
 import ru.example.booking.abstracts.RoomAbstractTest;
-import ru.example.booking.dao.Room;
+import ru.example.booking.dao.Reservation;
+import ru.example.booking.dao.RoleType;
 import ru.example.booking.dao.RoomDescription;
 import ru.example.booking.dto.defaults.ErrorResponse;
+import ru.example.booking.dto.user.CreateUserRequest;
 import ru.example.booking.exception.RoomBookingException;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -18,67 +19,50 @@ public class RoomServiceTest extends RoomAbstractTest {
     @Test
     public void whenBookAvailableDates_thenReturnUpdatedRoom() throws Exception {
 
-        var dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        userService.save(RoleType.ROLE_USER, CreateUserRequest.builder()
+                .email("email@email.com")
+                .password("pass")
+                .username("user1")
+                .build());
+
         var bookingDayFrom = LocalDate.now();
-        var bookingDayFromStr = bookingDayFrom.format(dateFormatter);
 
         var bookingDayTo = bookingDayFrom.plusDays(1);
-        var bookingDayToStr = bookingDayTo.format(dateFormatter);
 
-        var expectedResult = createStandardRoomWithoutBookedDates(1, false);
+        var room = createStandardRoomWithoutBookedDates(1, false);
         var bookedDates = new TreeSet<>(Set.of(
                 bookingDayFrom,
                 bookingDayTo
         ));
-        expectedResult.setBookedDates(bookedDates);
+        room.setBookedDates(bookedDates);
 
-        var actualResult = roomService.addBookedDates(1L, bookingDayFromStr, bookingDayToStr);
+        var expectedResponse = roomMapper.roomToSimpleResponse(room);
 
-        JsonAssert.assertJsonEquals(expectedResult, actualResult);
-    }
+        var actualResult = roomService.addReservation(Reservation.builder()
+                .room(createDefaultRoomWithoutBookedDates(1, RoomDescription.STANDARD, false))
+                .user(createDefaultUser(1, RoleType.ROLE_USER))
+                .checkInDate(bookingDayFrom)
+                .checkOutDate(bookingDayTo)
+                .build());
 
-    @Test
-    public void whenDeleteBooking_thenReturnUpdatedRoom() throws Exception {
-        var dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        var bookingDayToBeDeleted = LocalDate.now();
-        var bookingDayToBeDeletedStr = bookingDayToBeDeleted.format(dateFormatter);
-
-        var savedRoom = roomRepository.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
-
-        var expectedResult = Room.builder()
-                .id(savedRoom.getId())
-                .name(savedRoom.getName())
-                .capacity(savedRoom.getCapacity())
-                .hotel(savedRoom.getHotel())
-                .price(savedRoom.getPrice())
-                .number(savedRoom.getNumber())
-                .description(savedRoom.getDescription())
-                .bookedDates(
-                        Set.of(bookingDayToBeDeleted.plusDays(1))
-                )
-                .build();
-
-        var actualResult = roomService.deleteBookedDates(savedRoom.getId(), bookingDayToBeDeletedStr, bookingDayToBeDeletedStr);
-
-        JsonAssert.assertJsonEquals(expectedResult, actualResult);
+        JsonAssert.assertJsonEquals(expectedResponse, actualResult);
     }
 
     @Test
     public void whenDeleteNotExistsBooking_thenReturnError() throws Exception {
-        var dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         var bookingDayToBeDeleted = LocalDate.now().plusDays(3);
-        var bookingDayToBeDeletedStr = bookingDayToBeDeleted.format(dateFormatter);
-
-        var savedRoom = roomRepository.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
 
         var expectedResult = new ErrorResponse("This date/s is not booked");
 
         ErrorResponse actualResult = new ErrorResponse();
 
         try {
-            roomService.deleteBookedDates(savedRoom.getId(), bookingDayToBeDeletedStr, bookingDayToBeDeletedStr);
+            roomService.deleteReservation(Reservation.builder()
+                    .room(createDefaultRoomWithoutBookedDates(1, RoomDescription.STANDARD, false))
+                    .user(createDefaultUser(1, RoleType.ROLE_USER))
+                    .checkInDate(bookingDayToBeDeleted)
+                    .checkOutDate(bookingDayToBeDeleted)
+                    .build());
         } catch (RoomBookingException e) {
             actualResult = new ErrorResponse(e.getMessage());
         }
@@ -88,19 +72,30 @@ public class RoomServiceTest extends RoomAbstractTest {
 
     @Test
     public void whenBookNotAvailableDates_thenReturnError() throws Exception {
-        var dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         var bookingDay = LocalDate.now();
-        var bookingDayStr = bookingDay.format(dateFormatter);
 
-        var savedRoom = roomRepository.save(createDefaultRoomWithBookingDatesTodayAndTomorrow(RoomDescription.STANDARD));
+        var wrongReservation = Reservation.builder()
+                .room(createDefaultRoomWithoutBookedDates(1, RoomDescription.STANDARD, false))
+                .user(createDefaultUser(1, RoleType.ROLE_USER))
+                .checkInDate(bookingDay)
+                .checkOutDate(bookingDay)
+                .build();
+
+        userService.save(RoleType.ROLE_USER, CreateUserRequest.builder()
+                .email("email@email.com")
+                .password("pass")
+                .username("user1")
+                .build());
+
+        roomService.addReservation(wrongReservation);
 
         var expectedResult = new ErrorResponse("This dates is unavailable");
 
         ErrorResponse actualResult = new ErrorResponse();
 
         try {
-            roomService.addBookedDates(savedRoom.getId(), bookingDayStr, bookingDayStr);
+            roomService.addReservation(wrongReservation);
         } catch (RoomBookingException e) {
             actualResult = new ErrorResponse(e.getMessage());
         }
@@ -110,20 +105,22 @@ public class RoomServiceTest extends RoomAbstractTest {
 
     @Test
     public void whenBookDatesFromMoreThanTo_thenReturnError() throws Exception {
-        var dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         var bookingDayFrom = LocalDate.now();
-        var bookingDayFromStr = bookingDayFrom.format(dateFormatter);
 
         var bookingDayTo = LocalDate.now().minusDays(2);
-        var bookingDayToStr = bookingDayTo.format(dateFormatter);
 
         var expectedResult = new ErrorResponse("Dates is incorrect: Date \"to\" is earlier than date \"from\"");
 
         ErrorResponse actualResult = new ErrorResponse();
 
         try {
-            roomService.addBookedDates(1L, bookingDayFromStr, bookingDayToStr);
+            roomService.addReservation(Reservation.builder()
+                    .room(createDefaultRoomWithoutBookedDates(1, RoomDescription.STANDARD, false))
+                    .user(createDefaultUser(1, RoleType.ROLE_USER))
+                    .checkInDate(bookingDayFrom)
+                    .checkOutDate(bookingDayTo)
+                    .build());
         } catch (RoomBookingException e) {
             actualResult = new ErrorResponse(e.getMessage());
         }

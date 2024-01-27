@@ -11,6 +11,7 @@ import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.mapper.ReservationMapper;
 import ru.example.booking.repository.ReservationRepository;
+import ru.example.booking.util.BeanUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -45,9 +46,7 @@ public class ReservationService {
 
     public ReservationResponse booking(UpsertReservationRequest request, String username) {
         var reservation = reservationMapper.requestToReservation(request, datePattern);
-        roomService.addBookedDates(reservation.getRoom().getId(),
-                reservation.getCheckInDate(),
-                reservation.getCheckOutDate());
+        roomService.addReservation(reservation);
         reservation.setUser(userService.findByUsernameWithoutPrivilegeValidation(username));
         return reservationMapper.reservationToResponse(reservationRepository.save(reservation), datePattern);
     }
@@ -58,7 +57,7 @@ public class ReservationService {
         validationService.isValidAction(userService.findByUsernameWithoutPrivilegeValidation(username),
                 reservationForRemoving.getUser());
 
-        roomService.deleteBookedDates(id, reservationForRemoving.getCheckInDate(), reservationForRemoving.getCheckOutDate());
+        roomService.deleteReservation(reservationForRemoving);
         reservationRepository.deleteById(id);
     }
 
@@ -78,18 +77,13 @@ public class ReservationService {
             throw new RoomBookingException("This dates is unavailable");
         }
 
-        roomService.deleteBookedDates(existedReservation.getId(),
-                existedReservation.getCheckInDate(),
-                existedReservation.getCheckOutDate());
+        roomService.deleteReservation(existedReservation);
 
-        roomService.addBookedDates(updatedReservation.getRoom().getId(),
-                updatedReservation.getCheckInDate(),
-                updatedReservation.getCheckOutDate());
+        BeanUtils.copyNonNullProperties(updatedReservation, existedReservation);
 
-        updatedReservation.setId(id);
-        updatedReservation.setUser(existedReservation.getUser());
+        roomService.addReservation(existedReservation);
 
-        return reservationMapper.reservationToResponse(reservationRepository.save(updatedReservation), datePattern);
+        return reservationMapper.reservationToResponse(reservationRepository.save(existedReservation), datePattern);
     }
 
     public Reservation findReservationById(Long id) {

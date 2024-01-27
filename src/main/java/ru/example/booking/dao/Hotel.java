@@ -35,7 +35,8 @@ public class Hotel {
     @Column(name = "number_of_ratings")
     private Integer numberOfRatings;
 
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hotel_id")
     @ToString.Exclude
     @Builder.Default
     private List<Room> rooms = new ArrayList<>();

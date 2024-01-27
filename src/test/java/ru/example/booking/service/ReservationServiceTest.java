@@ -35,13 +35,14 @@ public class ReservationServiceTest extends ReservationAbstractTest {
     @Test
     public void whenBookingForUnavailableDates_thenReturnError() {
 
-        roomService.addBookedDates(1L, LocalDate.now().plusDays(10), LocalDate.now().plusDays(11));
 
         var reservationRequest = UpsertReservationRequest.builder()
                 .roomId(1L)
                 .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
                 .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(15), DATE_PATTERN))
                 .build();
+
+        roomService.addReservation(reservationMapper.requestToReservation(reservationRequest, DATE_PATTERN));
 
         var expectedResultId = new ErrorResponse("This dates is unavailable");
 

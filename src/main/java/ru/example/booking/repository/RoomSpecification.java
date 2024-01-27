@@ -1,19 +1,18 @@
 package ru.example.booking.repository;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 import ru.example.booking.dao.Hotel;
+import ru.example.booking.dao.Reservation;
 import ru.example.booking.dao.Room;
 import ru.example.booking.dao.RoomDescription;
 import ru.example.booking.dto.defaults.RoomFilter;
-import ru.example.booking.util.LocalDatesUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.time.ZoneId;
+import java.util.Date;
 
 public interface RoomSpecification {
 
@@ -22,19 +21,33 @@ public interface RoomSpecification {
                 .and(byRoomDescription(filter.getDescription()))
                 .and(byRoomPrice(filter.getMinPrice(), filter.getMaxPrice()))
                 .and(byRoomCapacity(filter.getCapacity()))
-                .and(byCheckInOutDates(filter.getDates()))
+                .and(byCheckInOutDates(filter.getCheckInLocalDate(), filter.getCheckOutLocalDate()))
                 .and(byRoomHotelId(filter.getHotelId()));
     }
 
-    static Specification<Room> byCheckInOutDates(Set<LocalDate> dates) {
+    static Specification<Room> byCheckInOutDates(LocalDate checkInDate, LocalDate checkOutDate) {
 
         return (root, query, cb) -> {
-            if (dates == null) {
+
+            if (checkInDate == null && checkOutDate == null) {
                 return null;
             }
-            return cb.isNotMember(dates, root.get(Room.Fields.bookedDates));
-        };
 
+            Date from = Date.from(checkInDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Date to = Date.from(checkOutDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<Reservation> reservationRoot = subquery.from(Reservation.class);
+            subquery.select(reservationRoot.get(Reservation.Fields.room).get(Room.Fields.id))
+                    .where(cb.and(
+                            cb.equal(reservationRoot.get(Reservation.Fields.room), root),
+                            cb.or(
+                                    cb.between(reservationRoot.get(Reservation.Fields.checkInDate), from, to),
+                                    cb.between(reservationRoot.get(Reservation.Fields.checkOutDate), from, to)
+                            )
+                    ));
+            return cb.not(cb.exists(subquery));
+        };
     }
 
     static Specification<Room> byRoomHotelId(Long hotelId) {

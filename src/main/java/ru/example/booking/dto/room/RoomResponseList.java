@@ -15,5 +15,5 @@ import java.util.List;
 public class RoomResponseList {
 
     @Builder.Default
-    private List<RoomResponse> rooms = new ArrayList<>();
+    private List<SimpleRoomResponse> rooms = new ArrayList<>();
 }

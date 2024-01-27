@@ -22,6 +22,7 @@ import org.testcontainers.utility.DockerImageName;
 import ru.example.booking.controller.ReservationController;
 import ru.example.booking.dao.*;
 import ru.example.booking.dto.defaults.ErrorResponse;
+import ru.example.booking.dto.reservation.UpsertReservationRequest;
 import ru.example.booking.mapper.HotelMapper;
 import ru.example.booking.mapper.ReservationMapper;
 import ru.example.booking.mapper.RoomMapper;
@@ -31,6 +32,7 @@ import ru.example.booking.repository.ReservationRepository;
 import ru.example.booking.repository.RoomRepository;
 import ru.example.booking.repository.UserRepository;
 import ru.example.booking.service.*;
+import ru.example.booking.util.LocalDatesUtil;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -201,6 +203,28 @@ public class AbstractMainTest {
         );
     }
 
+    protected List<Room> createDefaultRoomListWithBookedDates(boolean withHotelSaving) {
+        var rooms = List.of(
+                createStandardRoomWithoutBookedDates(1, withHotelSaving),
+                createStandardRoomWithoutBookedDates(2, withHotelSaving),
+                createPresidentRoomWithoutBookedDates(3, withHotelSaving),
+                createSuperiorRoomWithoutBookedDates(4, withHotelSaving),
+                createSuiteRoomWithoutBookedDates(5, withHotelSaving)
+        );
+
+        rooms.forEach(room -> {
+            var reservation = Reservation.builder()
+                    .id(room.getId())
+                    .checkInDate(LocalDate.now())
+                    .checkOutDate(LocalDate.now().plusDays(room.getId()))
+                    .user(createDefaultUser(1, RoleType.ROLE_USER))
+                    .build();
+            room.setReservations(List.of(reservation));
+            room.setBookedDates(roomService.getDateList(reservation.getCheckInDate(), reservation.getCheckOutDate()));
+        });
+        return rooms;
+    }
+
     protected Room createStandardRoomWithoutBookedDates(int roomNum, boolean withHotelSaving) {
         return createDefaultRoomWithoutBookedDates(roomNum, RoomDescription.STANDARD, withHotelSaving);
     }
@@ -299,6 +323,14 @@ public class AbstractMainTest {
 
     protected ErrorResponse getAccessErrorResponse() {
         return new ErrorResponse("Access denied, please contact administrator");
+    }
+
+    protected UpsertReservationRequest createUpsertReservationRequest(Long roomId, LocalDate from, LocalDate to) {
+        return UpsertReservationRequest.builder()
+                .roomId(roomId)
+                .checkInDate(LocalDatesUtil.localDateToStr(from, DATE_PATTERN))
+                .checkOutDate(LocalDatesUtil.localDateToStr(to, DATE_PATTERN))
+                .build();
     }
 
 }

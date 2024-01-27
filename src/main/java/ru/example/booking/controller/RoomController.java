@@ -3,12 +3,11 @@ package ru.example.booking.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.dto.defaults.FindAllSettings;
-import ru.example.booking.dto.room.RoomResponse;
 import ru.example.booking.dto.room.RoomResponseList;
+import ru.example.booking.dto.room.SimpleRoomResponse;
 import ru.example.booking.dto.room.UpsertRoomRequest;
 import ru.example.booking.service.RoomService;
 
@@ -30,7 +29,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public RoomResponse findById(@PathVariable("id") Long id) {
+    public SimpleRoomResponse findById(@PathVariable("id") Long id) {
         return roomService.findById(id);
     }
 
@@ -43,7 +42,7 @@ public class RoomController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public RoomResponse update(@PathVariable("id") Long id, @RequestBody UpsertRoomRequest request) {
+    public SimpleRoomResponse update(@PathVariable("id") Long id, @RequestBody UpsertRoomRequest request) {
         return roomService.updateById(id, request);
     }
 

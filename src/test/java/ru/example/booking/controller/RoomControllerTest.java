@@ -7,17 +7,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.example.booking.abstracts.RoomAbstractTest;
+import ru.example.booking.dao.RoleType;
 import ru.example.booking.dao.Room;
 import ru.example.booking.dao.RoomDescription;
 import ru.example.booking.dto.defaults.ErrorResponse;
 import ru.example.booking.dto.defaults.FindAllSettings;
 import ru.example.booking.dto.defaults.RoomFilter;
+import ru.example.booking.dto.reservation.UpsertReservationRequest;
+import ru.example.booking.dto.room.RoomResponseList;
+import ru.example.booking.dto.room.SimpleRoomResponse;
 import ru.example.booking.dto.room.UpsertRoomRequest;
+import ru.example.booking.dto.user.CreateUserRequest;
 import ru.example.booking.util.LocalDatesUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,7 +53,7 @@ public class RoomControllerTest extends RoomAbstractTest {
     public void whenFindRoomById_thenReturnRoom() throws Exception {
         JsonAssert.assertJsonEquals(true, roomRepository.existsById(1L));
 
-        var expectedResponse = roomMapper.roomToResponse(
+        var expectedResponse = roomMapper.roomToSimpleResponse(
                 createStandardRoomWithoutBookedDates(1, false)
         );
 
@@ -145,9 +149,9 @@ public class RoomControllerTest extends RoomAbstractTest {
         room3.setPrice(newPrice);
         room3.setNumber(newNumber);
 
-        var expectedResponse1 = roomMapper.roomToResponse(room1);
-        var expectedResponse2 = roomMapper.roomToResponse(room2);
-        var expectedResponse3 = roomMapper.roomToResponse(room3);
+        var expectedResponse1 = roomMapper.roomToSimpleResponse(room1);
+        var expectedResponse2 = roomMapper.roomToSimpleResponse(room2);
+        var expectedResponse3 = roomMapper.roomToSimpleResponse(room3);
 
         var actualResponse1 = mockMvc.perform(put("/api/room/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -477,7 +481,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByCapacity_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByCapacity_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -506,7 +510,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterById_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterById_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -535,7 +539,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByMinPrice_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByMinPrice_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -564,7 +568,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByMaxPrice_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByMaxPrice_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -593,7 +597,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByMaxAndMinPrice_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByMaxAndMinPrice_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -623,7 +627,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByRoomDescriptionStandard_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByRoomDescriptionStandard_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -654,7 +658,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByRoomDescriptionSuite_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByRoomDescriptionSuite_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -685,7 +689,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByRoomDescriptionPresident_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByRoomDescriptionPresident_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -716,7 +720,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByRoomDescriptionSuperior_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByRoomDescriptionSuperior_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -747,7 +751,7 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByHotelId_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithFilterByHotelId_thenReturnCorrectList() throws Exception {
 
         saveAdditionalRooms(20);
 
@@ -776,17 +780,21 @@ public class RoomControllerTest extends RoomAbstractTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    public void whenFindAllWithFilterWithFilterByCheckInOutDate_thenReturnCorrectList() throws Exception {
+    public void whenFindAllWithByCheckInOutDate1_thenReturnCorrectList() throws Exception {
 
-        saveAdditionalRooms(20);
+        userService.save(RoleType.ROLE_USER, CreateUserRequest.builder()
+                        .email("email@email.com")
+                        .password("pass")
+                        .username("user1")
+                        .build());
 
         roomRepository.findAll().forEach(
-                room -> {
-                    roomService.addBookedDates(
-                            room.getId(),
-                            LocalDatesUtil.localDateToStr(LocalDate.now(), DATE_PATTERN),
-                            LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(room.getId()), DATE_PATTERN));
-                }
+                room -> reservationService.booking(
+                        createUpsertReservationRequest(
+                                room.getId(), LocalDate.now(), LocalDate.now().plusDays(Math.toIntExact(room.getId()))
+                        ),
+                        "user1"
+                )
         );
 
         var settings = FindAllSettings.builder()
@@ -798,9 +806,337 @@ public class RoomControllerTest extends RoomAbstractTest {
                         .build())
                 .build();
 
-        List<Room> rooms = new ArrayList<>(createAdditionalRooms(3, 2));
 
-        var expectedResponse = roomMapper.roomListToResponseList(rooms);
+        var response = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var roomResponse = objectMapper.readValue(response, RoomResponseList.class);
+
+        JsonAssert.assertJsonEquals(4, roomResponse.getRooms().size());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithByCheckInOutDate2_thenReturnEmptyList() throws Exception {
+
+        userService.save(RoleType.ROLE_USER, CreateUserRequest.builder()
+                .email("email@email.com")
+                .password("pass")
+                .username("user1")
+                .build());
+
+        roomRepository.findAll().forEach(
+                room -> reservationService.booking(
+                        createUpsertReservationRequest(
+                                room.getId(), LocalDate.now(), LocalDate.now().plusDays(Math.toIntExact(room.getId()))
+                        ),
+                        "user1"
+                )
+        );
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now(), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build())
+                .build();
+
+
+        var response = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var roomResponse = objectMapper.readValue(response, RoomResponseList.class);
+
+        JsonAssert.assertJsonEquals(0, roomResponse.getRooms().size());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithByCheckInOutDate3_thenReturnCorrectList() throws Exception {
+
+
+        userService.save(RoleType.ROLE_USER, CreateUserRequest.builder()
+                .email("email@email.com")
+                .password("pass")
+                .username("user1")
+                .build());
+
+        // + room1
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(1L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now(), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(1), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(2L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(1), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(5), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(3L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(4L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(3), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // + room5
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(5L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(11), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(15), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build())
+                .build();
+
+
+        var response = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var actualResponse = objectMapper.readValue(response, RoomResponseList.class).getRooms().size();
+
+        JsonAssert.assertJsonEquals(2, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithByCheckInOutDate4_thenReturnCorrectList() throws Exception {
+
+
+        userService.save(RoleType.ROLE_USER, CreateUserRequest.builder()
+                .email("email@email.com")
+                .password("pass")
+                .username("user1")
+                .build());
+
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(1L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now(), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(1), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(2L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(1), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(5), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(3L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(4L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(3), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // + room5
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(5L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(11), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(15), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(1L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(3), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(5L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(3), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(5), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build())
+                .build();
+
+
+        var response = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var actualResponse = objectMapper.readValue(response, RoomResponseList.class).getRooms().size();
+
+        JsonAssert.assertJsonEquals(0, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithByCheckInOutDate5_thenReturnCorrectList() throws Exception {
+
+
+        userService.save(RoleType.ROLE_USER, CreateUserRequest.builder()
+                .email("email@email.com")
+                .password("pass")
+                .username("user1")
+                .build());
+
+        // + room1
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(1L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now(), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(1), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(2L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(1), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(5), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(3L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+        // -
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(4L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(3), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // + room5
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(5L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(11), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(15), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build())
+                .build();
+
+        var expectedResponse = RoomResponseList.builder()
+                .rooms(List.of(
+                        SimpleRoomResponse.builder()
+                                .id(1L)
+                                .hotelId(1L)
+                                .description(RoomDescription.STANDARD)
+                                .name("Room 1")
+                                .number(1)
+                                .price(BigDecimal.valueOf(1))
+                                .capacity(1)
+                                .bookedDatesSize(2)
+                                .build(),
+                        SimpleRoomResponse.builder()
+                                .id(5L)
+                                .hotelId(5L)
+                                .description(RoomDescription.SUITE)
+                                .name("Room 5")
+                                .number(5)
+                                .price(BigDecimal.valueOf(5))
+                                .capacity(5)
+                                .bookedDatesSize(5)
+                                .build()
+                        )
+                )
+                .build();
+
 
         var actualResponse = mockMvc.perform(get("/api/room/filter")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -812,4 +1148,84 @@ public class RoomControllerTest extends RoomAbstractTest {
 
         JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void whenFindAllWithByCheckInOutDate6_thenReturnCorrectList() throws Exception {
+
+
+        userService.save(RoleType.ROLE_USER, CreateUserRequest.builder()
+                .email("email@email.com")
+                .password("pass")
+                .username("user1")
+                .build());
+
+        // + room1
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(1L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now(), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(1), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // + room2
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(2L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(1), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(5), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // + room3
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(3L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(2), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // + room4
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(4L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(3), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(10), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+        // + room5
+        reservationService.booking(
+                UpsertReservationRequest.builder()
+                        .roomId(5L)
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(21), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(22), DATE_PATTERN))
+                        .build(),
+                "user1"
+        );
+
+        var settings = FindAllSettings.builder()
+                .pageNum(0)
+                .pageSize(100)
+                .roomFilter(RoomFilter.builder()
+                        .checkInDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(11), DATE_PATTERN))
+                        .checkOutDate(LocalDatesUtil.localDateToStr(LocalDate.now().plusDays(20), DATE_PATTERN))
+                        .build())
+                .build();
+
+        var response = mockMvc.perform(get("/api/room/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(settings)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var actualResponse = objectMapper.readValue(response, RoomResponseList.class).getRooms().size();
+
+        JsonAssert.assertJsonEquals(5, actualResponse);
+    }
+
 }
