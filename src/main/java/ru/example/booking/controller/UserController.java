@@ -6,7 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ru.example.booking.dao.RoleType;
+import ru.example.booking.dao.postrgres.RoleType;
 import ru.example.booking.dto.user.CreateUserRequest;
 import ru.example.booking.dto.user.UpdateUserRequest;
 import ru.example.booking.dto.user.UserResponse;

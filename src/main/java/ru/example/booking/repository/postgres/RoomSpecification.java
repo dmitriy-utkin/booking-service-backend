@@ -1,12 +1,12 @@
-package ru.example.booking.repository;
+package ru.example.booking.repository.postgres;
 
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
-import ru.example.booking.dao.Hotel;
-import ru.example.booking.dao.Reservation;
-import ru.example.booking.dao.Room;
-import ru.example.booking.dao.RoomDescription;
+import ru.example.booking.dao.postrgres.Hotel;
+import ru.example.booking.dao.postrgres.Reservation;
+import ru.example.booking.dao.postrgres.Room;
+import ru.example.booking.dao.postrgres.RoomDescription;
 import ru.example.booking.dto.defaults.RoomFilter;
 
 import java.math.BigDecimal;

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.example.booking.dao.Hotel;
+import ru.example.booking.dao.postrgres.Hotel;
 
 import java.util.List;
 import java.util.Set;

@@ -3,8 +3,8 @@ package ru.example.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import ru.example.booking.dao.RoleType;
-import ru.example.booking.dao.User;
+import ru.example.booking.dao.postrgres.RoleType;
+import ru.example.booking.dao.postrgres.User;
 
 import java.util.Objects;
 

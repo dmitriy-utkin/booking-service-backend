@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.example.booking.dao.RoomDescription;
+import ru.example.booking.dao.postrgres.RoomDescription;
 
 import java.math.BigDecimal;
 

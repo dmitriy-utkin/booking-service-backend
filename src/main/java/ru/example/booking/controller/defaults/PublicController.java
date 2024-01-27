@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.example.booking.dao.RoleType;
+import ru.example.booking.dao.postrgres.RoleType;
 import ru.example.booking.dto.user.CreateUserRequest;
 import ru.example.booking.dto.user.UserResponse;
 import ru.example.booking.service.UserService;

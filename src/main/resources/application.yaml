@@ -1,7 +1,14 @@
 spring:
 
+  kafka:
+    bootstrap-servers: localhost:9092
+
   profiles:
     active: dev
+
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/appdatabase?authSource=admin
 
   jpa:
     generate-ddl: true
@@ -20,3 +27,8 @@ app:
     mockHotelPath: src/main/resources/data/data.json
 
   dateFormat: "dd/MM/yyyy"
+
+  kafka:
+    kafkaGroupId: "kafka-booking-group-id"
+    userTopic: "user-service-topic"
+    reservationTopic: "reservation-service-topic"

@@ -3,7 +3,7 @@ package ru.example.booking.mapper;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-import ru.example.booking.dao.Room;
+import ru.example.booking.dao.postrgres.Room;
 import ru.example.booking.dto.room.RoomResponseList;
 import ru.example.booking.dto.room.SimpleRoomResponse;
 import ru.example.booking.dto.room.UpsertRoomRequest;

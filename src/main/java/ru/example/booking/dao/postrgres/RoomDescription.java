@@ -1,4 +1,4 @@
-package ru.example.booking.dao;
+package ru.example.booking.dao.postrgres;
 
 public enum RoomDescription {
     STANDARD, SUPERIOR, SUITE, PRESIDENT

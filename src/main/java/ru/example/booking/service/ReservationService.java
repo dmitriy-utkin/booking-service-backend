@@ -3,14 +3,14 @@ package ru.example.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.example.booking.dao.Reservation;
+import ru.example.booking.dao.postrgres.Reservation;
 import ru.example.booking.dto.reservation.ReservationResponse;
 import ru.example.booking.dto.reservation.ReservationResponseList;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.mapper.ReservationMapper;
-import ru.example.booking.repository.ReservationRepository;
+import ru.example.booking.repository.postgres.ReservationRepository;
 import ru.example.booking.util.BeanUtils;
 
 @Service
@@ -48,7 +48,10 @@ public class ReservationService {
         var reservation = reservationMapper.requestToReservation(request, datePattern);
         roomService.addReservation(reservation);
         reservation.setUser(userService.findByUsernameWithoutPrivilegeValidation(username));
-        return reservationMapper.reservationToResponse(reservationRepository.save(reservation), datePattern);
+
+        var savedReservation = reservationRepository.save(reservation);
+
+        return reservationMapper.reservationToResponse(savedReservation, datePattern);
     }
 
     public void cancel(Long id, String username) {

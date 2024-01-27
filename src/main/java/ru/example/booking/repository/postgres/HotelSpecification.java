@@ -1,7 +1,7 @@
-package ru.example.booking.repository;
+package ru.example.booking.repository.postgres;
 
 import org.springframework.data.jpa.domain.Specification;
-import ru.example.booking.dao.Hotel;
+import ru.example.booking.dao.postrgres.Hotel;
 import ru.example.booking.dto.defaults.HotelFilter;
 
 public interface HotelSpecification {

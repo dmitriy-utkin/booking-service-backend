@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.example.booking.dao.RoleType;
+import ru.example.booking.dao.postrgres.RoleType;
 
 import java.util.Set;
 

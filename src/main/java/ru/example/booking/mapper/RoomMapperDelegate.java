@@ -1,7 +1,7 @@
 package ru.example.booking.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.example.booking.dao.Room;
+import ru.example.booking.dao.postrgres.Room;
 import ru.example.booking.dto.room.SimpleRoomResponse;
 import ru.example.booking.dto.room.UpsertRoomRequest;
 import ru.example.booking.service.HotelService;

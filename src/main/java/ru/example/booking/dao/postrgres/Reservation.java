@@ -1,4 +1,4 @@
-package ru.example.booking.dao;
+package ru.example.booking.dao.postrgres;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

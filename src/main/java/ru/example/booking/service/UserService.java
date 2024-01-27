@@ -1,10 +1,12 @@
 package ru.example.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.example.booking.dao.RoleType;
-import ru.example.booking.dao.User;
+import ru.example.booking.dao.postrgres.RoleType;
+import ru.example.booking.dao.postrgres.User;
 import ru.example.booking.dto.user.CreateUserRequest;
 import ru.example.booking.dto.user.UpdateUserRequest;
 import ru.example.booking.dto.user.UserResponse;
@@ -12,9 +14,10 @@ import ru.example.booking.dto.user.UserResponseList;
 import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.mapper.UserMapper;
-import ru.example.booking.repository.UserRepository;
+import ru.example.booking.repository.postgres.UserRepository;
 import ru.example.booking.util.BeanUtils;
 
+import java.time.Instant;
 import java.util.Set;
 
 @Service
@@ -28,6 +31,11 @@ public class UserService {
     private final ValidationService validationService;
 
     private final UserMapper userMapper;
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    @Value("${app.kafka.userTopic}")
+    private String kafkaTopic;
 
     public UserResponseList findAll() {
         return userMapper.userListToResponseList(userRepository.findAll());
@@ -49,7 +57,11 @@ public class UserService {
         var userForSaving = userMapper.createRequestToUser(request);
         userForSaving.setRoles(Set.of(role));
         userForSaving.setPassword(passwordEncoder.encode(userForSaving.getPassword()));
-        return userMapper.userToUserResponse(userRepository.save(userForSaving));
+        var savedUser = userRepository.save(userForSaving);
+
+        kafkaTemplate.send(kafkaTopic, userMapper.userToEvent(savedUser, Instant.now()));
+
+        return userMapper.userToUserResponse(savedUser);
     }
 
     public UserResponse update(Long id, UpdateUserRequest request, String username) {

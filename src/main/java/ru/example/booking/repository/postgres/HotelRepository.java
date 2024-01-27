@@ -1,9 +1,9 @@
-package ru.example.booking.repository;
+package ru.example.booking.repository.postgres;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
-import ru.example.booking.dao.Hotel;
+import ru.example.booking.dao.postrgres.Hotel;
 
 import java.util.Optional;
 

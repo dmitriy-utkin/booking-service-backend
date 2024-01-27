@@ -28,6 +28,9 @@ dependencies {
     //Postgres
     runtimeOnly 'org.postgresql:postgresql'
 
+    //MONGO
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
     //Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor("org.projectlombok:lombok")
@@ -36,12 +39,18 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
 
+    //KAFKA
+    implementation 'org.springframework.kafka:spring-kafka'
+
     //TEST
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation("org.projectlombok:lombok:1.18.26")
     testImplementation("org.testcontainers:junit-jupiter:1.17.6")
     testImplementation("org.testcontainers:postgresql:1.17.6")
     testImplementation("net.javacrumbs.json-unit:json-unit:2.38.0")
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'org.testcontainers:mongodb'
+    testImplementation("org.testcontainers:kafka")
 
     //Security
     implementation("org.springframework.boot:spring-boot-starter-security")

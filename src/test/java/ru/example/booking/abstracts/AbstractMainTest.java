@@ -15,22 +15,26 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import ru.example.booking.controller.ReservationController;
-import ru.example.booking.dao.*;
+import ru.example.booking.dao.postrgres.*;
 import ru.example.booking.dto.defaults.ErrorResponse;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
 import ru.example.booking.mapper.HotelMapper;
 import ru.example.booking.mapper.ReservationMapper;
 import ru.example.booking.mapper.RoomMapper;
 import ru.example.booking.mapper.UserMapper;
-import ru.example.booking.repository.HotelRepository;
-import ru.example.booking.repository.ReservationRepository;
-import ru.example.booking.repository.RoomRepository;
-import ru.example.booking.repository.UserRepository;
+import ru.example.booking.repository.mongo.StatisticReservationRepository;
+import ru.example.booking.repository.mongo.StatisticUserRepository;
+import ru.example.booking.repository.postgres.HotelRepository;
+import ru.example.booking.repository.postgres.ReservationRepository;
+import ru.example.booking.repository.postgres.RoomRepository;
+import ru.example.booking.repository.postgres.UserRepository;
 import ru.example.booking.service.*;
 import ru.example.booking.util.LocalDatesUtil;
 
@@ -86,8 +90,8 @@ public class AbstractMainTest {
     @Autowired
     protected MockMvc mockMvc;
 
-    @Autowired
-    protected WebApplicationContext context;
+//    @Autowired
+//    protected WebApplicationContext context;
 
     @Autowired
     protected HotelMapper hotelMapper;
@@ -110,6 +114,19 @@ public class AbstractMainTest {
     @Autowired
     protected PasswordEncoder passwordEncoder;
 
+    @Autowired
+    protected StatisticService statisticService;
+
+    @Autowired
+    protected StatisticUserRepository statisticUserRepository;
+
+    @Autowired
+    protected StatisticReservationRepository statisticReservationRepository;
+
+    @Container
+    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.8")
+            .withReuse(true);
+
     protected static PostgreSQLContainer postgreSQLContainer;
 
     static {
@@ -118,11 +135,21 @@ public class AbstractMainTest {
         postgreSQLContainer.start();
     }
 
+    @Container
+    static final KafkaContainer kafkaContainer = new KafkaContainer(
+        DockerImageName.parse("confluentinc/cp-kafka:7.3.3")
+    );
+
     @DynamicPropertySource
     public static void register(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+
+        registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
+
         registry.add("app.dateFormat", () -> DATE_PATTERN);
     }
 

@@ -3,8 +3,8 @@ package ru.example.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.example.booking.dao.Hotel;
-import ru.example.booking.dao.Room;
+import ru.example.booking.dao.postrgres.Hotel;
+import ru.example.booking.dao.postrgres.Room;
 import ru.example.booking.dto.defaults.FindAllSettings;
 import ru.example.booking.dto.hotel.CreateHotelRequest;
 import ru.example.booking.dto.hotel.HotelResponse;
@@ -13,8 +13,8 @@ import ru.example.booking.dto.hotel.UpdateHotelRequest;
 import ru.example.booking.exception.EntityAlreadyExists;
 import ru.example.booking.exception.EntityNotFoundException;
 import ru.example.booking.mapper.HotelMapper;
-import ru.example.booking.repository.HotelRepository;
-import ru.example.booking.repository.HotelSpecification;
+import ru.example.booking.repository.postgres.HotelRepository;
+import ru.example.booking.repository.postgres.HotelSpecification;
 import ru.example.booking.util.BeanUtils;
 
 

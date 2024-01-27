@@ -1,7 +1,7 @@
 package ru.example.booking.abstracts;
 
 import org.junit.jupiter.api.BeforeEach;
-import ru.example.booking.dao.Hotel;
+import ru.example.booking.dao.postrgres.Hotel;
 
 import java.util.ArrayList;
 import java.util.List;
