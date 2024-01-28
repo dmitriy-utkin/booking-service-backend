@@ -18,7 +18,7 @@ import ru.example.booking.repository.postgres.RoomRepository;
 import ru.example.booking.repository.postgres.UserRepository;
 import ru.example.booking.service.ReservationService;
 import ru.example.booking.util.LocalDatesUtil;
-import ru.example.booking.util.UploadUtils;
+import ru.example.booking.util.IOUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -52,7 +52,7 @@ public class DevUploader {
 
         clearDatabase();
 
-        UploadObject uploadObject = UploadUtils.readValues(mockHotelPath);
+        UploadObject uploadObject = IOUtils.readValues(mockHotelPath);
 
         List<Hotel> savedHotels = hotelRepository.saveAllAndFlush(uploadObject.getHotels());
 
