@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import ru.example.booking.dao.postrgres.*;
 import ru.example.booking.dto.defaults.UploadObject;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
+import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.repository.postgres.HotelRepository;
 import ru.example.booking.repository.postgres.ReservationRepository;
 import ru.example.booking.repository.postgres.RoomRepository;
