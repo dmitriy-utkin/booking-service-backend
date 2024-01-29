@@ -2,6 +2,7 @@ package ru.example.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.example.booking.dao.postrgres.Reservation;
 import ru.example.booking.dto.reservation.ReservationResponse;
@@ -12,6 +13,8 @@ import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.mapper.ReservationMapper;
 import ru.example.booking.repository.postgres.ReservationRepository;
 import ru.example.booking.util.BeanUtils;
+
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,11 @@ public class ReservationService {
     private final ValidationService validationService;
 
     private final ReservationMapper reservationMapper;
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    @Value("${app.kafka.reservationTopic}")
+    private String kafkaTopic;
 
     @Value("${app.dateFormat}")
     private String datePattern;
@@ -50,6 +58,8 @@ public class ReservationService {
         reservation.setUser(userService.findByUsernameWithoutPrivilegeValidation(username));
 
         var savedReservation = reservationRepository.save(reservation);
+
+        kafkaTemplate.send(kafkaTopic, reservationMapper.reservationToEvent(savedReservation, Instant.now()));
 
         return reservationMapper.reservationToResponse(savedReservation, datePattern);
     }

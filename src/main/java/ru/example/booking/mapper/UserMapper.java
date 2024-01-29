@@ -12,7 +12,6 @@ import ru.example.booking.statistics.event.UserEvent;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {

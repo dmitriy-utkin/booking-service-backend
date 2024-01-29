@@ -7,9 +7,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.example.booking.mapper.ReservationMapper;
 import ru.example.booking.mapper.UserMapper;
+import ru.example.booking.service.StatisticService;
 import ru.example.booking.statistics.event.ReservationEvent;
 import ru.example.booking.statistics.event.UserEvent;
-import ru.example.booking.service.StatisticService;
 
 import java.util.UUID;
 

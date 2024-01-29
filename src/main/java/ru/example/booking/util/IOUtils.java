@@ -6,12 +6,10 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import ru.example.booking.dto.defaults.UploadObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 @UtilityClass
@@ -24,12 +22,9 @@ public class IOUtils {
     }
 
     @SneakyThrows
-    public static <T> void generateCsvFile(List<T> data, String filePathWithoutDataStamp) {
-        String finalFileOutputName = filePathWithoutDataStamp + "_" +
-                LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-        File file = new File(finalFileOutputName);
-        FileWriter outputFile = new FileWriter(file);
-        CSVWriter csvWriter = new CSVWriter(outputFile);
+    public static <T> byte[] generateCsvFile(List<T> data) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        CSVWriter writer = new CSVWriter(new OutputStreamWriter(outputStream));
 
         T objectType = data.get(0);
         Field[] fields = objectType.getClass().getDeclaredFields();
@@ -39,7 +34,7 @@ public class IOUtils {
             fieldNames[i] = fields[i].getName();
         }
 
-        csvWriter.writeNext(fieldNames);
+        writer.writeNext(fieldNames);
 
         for (T part : data) {
             String[] row = new String[fields.length];
@@ -48,8 +43,9 @@ public class IOUtils {
                 Object value = fields[i].get(part);
                 row[i] = value == null ? "" : value.toString();
             }
-            csvWriter.writeNext(row);
+            writer.writeNext(row);
         }
-        csvWriter.close();
+        writer.close();
+        return outputStream.toByteArray();
     }
 }

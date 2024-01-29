@@ -10,7 +10,6 @@ import ru.example.booking.statistics.event.ReservationEvent;
 import ru.example.booking.util.LocalDatesUtil;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public abstract class ReservationMapperDelegate implements ReservationMapper {
 

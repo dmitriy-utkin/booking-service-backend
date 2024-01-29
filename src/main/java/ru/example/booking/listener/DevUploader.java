@@ -6,19 +6,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.example.booking.dao.postrgres.*;
 import ru.example.booking.dto.defaults.UploadObject;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
-import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.repository.postgres.HotelRepository;
 import ru.example.booking.repository.postgres.ReservationRepository;
 import ru.example.booking.repository.postgres.RoomRepository;
 import ru.example.booking.repository.postgres.UserRepository;
 import ru.example.booking.service.ReservationService;
-import ru.example.booking.util.LocalDatesUtil;
 import ru.example.booking.util.IOUtils;
+import ru.example.booking.util.LocalDatesUtil;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -39,16 +38,18 @@ public class DevUploader {
 
     private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Value("${app.dateFormat}")
     private String datePattern;
-
 
     @Value("${app.uploading.mockHotelPath}")
     private String mockHotelPath;
 
     @EventListener(ApplicationStartedEvent.class)
-    @Order(1)
-    public void uploadHotel() {
+    public void uploadData() {
+
+        log.info("Uploader is started");
 
         clearDatabase();
 
@@ -135,7 +136,7 @@ public class DevUploader {
             Collections.shuffle(roles);
             users.add(User.builder()
                     .email("email" + i + "@email.com")
-                    .password("pass" + i)
+                    .password(passwordEncoder.encode("pass" + i))
                     .username("user" + i)
                     .roles(Set.of(roles.get(0)))
                     .build());
