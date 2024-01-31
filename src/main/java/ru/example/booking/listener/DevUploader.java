@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import ru.example.booking.dao.postrgres.*;
 import ru.example.booking.dto.defaults.UploadObject;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
-import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.repository.postgres.HotelRepository;
 import ru.example.booking.repository.postgres.ReservationRepository;
 import ru.example.booking.repository.postgres.RoomRepository;
@@ -84,16 +83,16 @@ public class DevUploader {
 
         List<User> savedUsers = userRepository.saveAll(generateUsers(100));
 
-        generateReservations(1_500, savedRooms, uploadObject.getDates()).forEach(
-                reservation -> {
-                    Collections.shuffle(savedUsers);
-                    try {
-                        reservationService.booking(reservation, savedUsers.get(0).getUsername());
-                    } catch (RoomBookingException e) {
-                        log.error(e.getMessage());
-                    }
-                }
-        );
+//        generateReservations(1_500, savedRooms, uploadObject.getDates()).forEach(
+//                reservation -> {
+//                    Collections.shuffle(savedUsers);
+//                    try {
+//                        reservationService.booking(reservation, savedUsers.get(0).getUsername());
+//                    } catch (RoomBookingException e) {
+//                        log.error(e.getMessage());
+//                    }
+//                }
+//        );
         log.info("Was saved: users - {}, hotels - {}, rooms - {}, reservations - {}",
                 savedUsers.size(),
                 savedHotels.size(),

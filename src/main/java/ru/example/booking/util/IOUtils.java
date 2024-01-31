@@ -22,7 +22,7 @@ public class IOUtils {
     }
 
     @SneakyThrows
-    public static <T> byte[] generateCsvFile(List<T> data) {
+    public static <T> byte[] generateCsvByteArray(List<T> data) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CSVWriter writer = new CSVWriter(new OutputStreamWriter(outputStream));
 

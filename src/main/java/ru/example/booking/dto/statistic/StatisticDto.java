@@ -1,10 +1,10 @@
-package ru.example.booking.dto.defaults;
+package ru.example.booking.dto.statistic;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 
 @Data
@@ -15,5 +15,5 @@ public class StatisticDto {
 
     private HttpHeaders headers;
 
-    private ByteArrayResource body;
+    private Resource body;
 }

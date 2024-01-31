@@ -2,11 +2,15 @@ package ru.example.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import ru.example.booking.dao.mongo.ReservationsStatistic;
 import ru.example.booking.dao.mongo.UserStatistic;
-import ru.example.booking.dto.defaults.StatisticDto;
+import ru.example.booking.dto.statistic.StatisticDto;
+import ru.example.booking.dto.statistic.StatisticType;
+import ru.example.booking.exception.IllegalArguments;
 import ru.example.booking.repository.mongo.StatisticReservationRepository;
 import ru.example.booking.repository.mongo.StatisticUserRepository;
 import ru.example.booking.util.IOUtils;
@@ -24,21 +28,21 @@ public class StatisticService {
 
     private final StatisticUserRepository statisticUserRepository;
 
-    public StatisticDto prepareUserStatistic() {
-        HttpHeaders headers = getHeaders(true, false);
+    public StatisticDto prepareStatistic(StatisticType type) {
+        Resource resource;
+        HttpHeaders headers;
 
-        ByteArrayResource resource = new ByteArrayResource(IOUtils.generateCsvFile(statisticUserRepository.findAll()));
-
-        return StatisticDto.builder().headers(headers).body(resource).build();
-    }
-
-    public StatisticDto prepareReservationStatistic() {
-        HttpHeaders headers = getHeaders(false, true);
-
-        var i = statisticReservationRepository.count();
-
-        ByteArrayResource resource = new ByteArrayResource(IOUtils.generateCsvFile(
-                statisticReservationRepository.findAll()));
+        switch (type) {
+            case USER -> {
+                resource = new ByteArrayResource(IOUtils.generateCsvByteArray(statisticUserRepository.findAll()));
+                headers = getHeaders(true, false);
+            }
+            case RESERVATION -> {
+                resource = new ByteArrayResource(IOUtils.generateCsvByteArray((statisticReservationRepository.findAll())));
+                headers = getHeaders(false, true);
+            }
+            default -> throw new IllegalArguments("Statistic type is not defined");
+        }
 
         return StatisticDto.builder().headers(headers).body(resource).build();
     }
@@ -55,21 +59,21 @@ public class StatisticService {
 
     private HttpHeaders getHeaders(boolean user, boolean reservation) {
 
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH:mm");
 
         String actualDateTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()).format(formatter);
 
-        String headervalue = "";
+        String filename = "";
 
         if (user) {
-            headervalue = "attachment; filename=user_stat_" + actualDateTime + ".csv";
+            filename = "user_stat_" + actualDateTime + ".csv";
         } else if (reservation) {
-            headervalue = "attachment; filename=reservation_stat_" + actualDateTime + ".csv";
+            filename = "reservation_stat_" + actualDateTime + ".csv";
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, headervalue);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
         return headers;
     }
