@@ -26,6 +26,21 @@ app:
   uploading:
     mockHotelPath: src/main/resources/data/data.json
 
+    cache:
+      enable: true
+      properties:
+        cache-names:
+          - allRooms
+          - allRoomsWithFilter
+          - roomById
+        caches:
+          allRooms:
+            expiry: 2m
+          allRoomsWithFilter:
+            expiry: 2m
+          roomById:
+            expiry: 2m
+
   dateFormat: "dd/MM/yyyy"
 
   kafka:

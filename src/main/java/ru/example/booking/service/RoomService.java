@@ -2,8 +2,12 @@ package ru.example.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.example.booking.configuration.properties.CacheProperties;
 import ru.example.booking.dao.postrgres.Reservation;
 import ru.example.booking.dao.postrgres.Room;
 import ru.example.booking.dto.defaults.FindAllSettings;
@@ -38,10 +42,12 @@ public class RoomService {
     @Value("${app.dateFormat}")
     private String datePattern;
 
+    @Cacheable(cacheNames = CacheProperties.CacheNames.ALL_ROOMS)
     public RoomResponseList findAll() {
         return roomMapper.roomListToResponseList(roomRepository.findAll());
     }
 
+    @Cacheable(cacheNames = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, key = "#settings")
     public RoomResponseList findAll(FindAllSettings settings) {
 
         if (settings.getRoomFilter().getCheckInDate() != null && settings.getRoomFilter().getCheckOutDate() != null) {
@@ -55,6 +61,7 @@ public class RoomService {
         );
     }
 
+    @Cacheable(cacheNames = CacheProperties.CacheNames.ROOM_BY_ID, key = "#id")
     public SimpleRoomResponse findById(Long id) {
         return roomMapper.roomToSimpleResponse(findRoomById(id));
     }
@@ -72,6 +79,11 @@ public class RoomService {
         return roomMapper.roomToSimpleResponse(room);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ROOM_BY_ID, allEntries = true)
+    })
     public SimpleRoomResponse updateById(Long id, UpsertRoomRequest request) {
         if (!roomRepository.existsById(id)) {
             throw new EntityNotFoundException("Room not found, ID is " + id);
@@ -84,6 +96,10 @@ public class RoomService {
         return roomMapper.roomToSimpleResponse(roomRepository.save(existedRoom));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, allEntries = true)
+    })
     public SimpleRoomResponse save(UpsertRoomRequest request) {
         if (roomRepository.existsByName(request.getName())) {
             throw new EntityAlreadyExists("Room with name \"" + request.getName() + "\" is already exists");
@@ -94,6 +110,11 @@ public class RoomService {
         return roomMapper.roomToSimpleResponse(roomRepository.save(room));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ROOM_BY_ID, allEntries = true)
+    })
     public void deleteById(Long id) {
         if (!roomRepository.existsById(id)) {
             throw new EntityNotFoundException("Room not found, ID is " + id);
@@ -101,6 +122,11 @@ public class RoomService {
         roomRepository.deleteById(id);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ROOM_BY_ID, allEntries = true)
+    })
     public SimpleRoomResponse addReservation(Reservation reservation) {
         Room existedRoom = findRoomById(reservation.getRoom().getId());
 
@@ -126,6 +152,11 @@ public class RoomService {
         return roomMapper.roomToSimpleResponse(roomRepository.save(existedRoom));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, allEntries = true),
+            @CacheEvict(value = CacheProperties.CacheNames.ROOM_BY_ID, allEntries = true)
+    })
     public SimpleRoomResponse deleteReservation(Reservation reservation) {
         Room existedRoom = findRoomById(reservation.getRoom().getId());
 
