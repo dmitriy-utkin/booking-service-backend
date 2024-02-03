@@ -5,13 +5,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import ru.example.booking.dto.defaults.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.dao.postrgres.RoleType;
+import ru.example.booking.dto.defaults.ErrorResponse;
 import ru.example.booking.dto.user.CreateUserRequest;
 import ru.example.booking.service.UserService;
 

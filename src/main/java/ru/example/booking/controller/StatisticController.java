@@ -11,11 +11,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import ru.example.booking.dto.defaults.ErrorResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.example.booking.dto.defaults.ErrorResponse;
 import ru.example.booking.dto.statistic.StatisticType;
 import ru.example.booking.service.StatisticService;
 

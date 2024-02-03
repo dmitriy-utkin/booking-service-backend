@@ -12,12 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.example.booking.dto.defaults.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import ru.example.booking.dto.defaults.ErrorResponse;
 import ru.example.booking.dto.reservation.ReservationResponse;
 import ru.example.booking.dto.reservation.ReservationResponseList;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
-import ru.example.booking.dto.room.RoomResponseList;
 import ru.example.booking.service.ReservationService;
 
 @RestController

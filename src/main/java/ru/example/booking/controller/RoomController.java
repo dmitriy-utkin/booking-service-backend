@@ -11,13 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import ru.example.booking.dto.defaults.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import ru.example.booking.dto.defaults.ErrorResponse;
 import ru.example.booking.dto.defaults.FindAllSettings;
 import ru.example.booking.dto.room.RoomResponseList;
 import ru.example.booking.dto.room.SimpleRoomResponse;
 import ru.example.booking.dto.room.UpsertRoomRequest;
-import ru.example.booking.dto.user.UserResponseList;
 import ru.example.booking.service.RoomService;
 
 @RestController

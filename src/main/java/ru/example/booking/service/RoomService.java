@@ -1,6 +1,7 @@
 package ru.example.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,6 +32,7 @@ import java.util.TreeSet;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RoomService {
 
     private final RoomRepository roomRepository;
@@ -49,6 +51,8 @@ public class RoomService {
 
     @Cacheable(cacheNames = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, key = "#settings")
     public RoomResponseList findAll(FindAllSettings settings) {
+
+        log.info("Method findAll with filter was called");
 
         if (settings.getRoomFilter().getCheckInDate() != null && settings.getRoomFilter().getCheckOutDate() != null) {
             settings.getRoomFilter().setCheckInLocalDate(LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckInDate(), datePattern));

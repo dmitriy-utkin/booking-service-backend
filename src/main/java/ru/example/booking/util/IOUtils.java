@@ -23,6 +23,9 @@ public class IOUtils {
 
     @SneakyThrows
     public static <T> byte[] generateCsvByteArray(List<T> data) {
+        if (data.isEmpty()) {
+            return new byte[0];
+        }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CSVWriter writer = new CSVWriter(new OutputStreamWriter(outputStream));
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import ru.example.booking.dao.postrgres.*;
 import ru.example.booking.dto.defaults.UploadObject;
 import ru.example.booking.dto.reservation.UpsertReservationRequest;
+import ru.example.booking.exception.RoomBookingException;
 import ru.example.booking.repository.postgres.HotelRepository;
 import ru.example.booking.repository.postgres.ReservationRepository;
 import ru.example.booking.repository.postgres.RoomRepository;
@@ -43,17 +44,25 @@ public class DevUploader {
     @Value("${app.dateFormat}")
     private String datePattern;
 
-    @Value("${app.uploading.mockHotelPath}")
-    private String mockHotelPath;
+    @Value("${app.uploading.mockData}")
+    private String mockData;
 
     @EventListener(ApplicationStartedEvent.class)
     public void uploadData() {
 
         log.info("Uploader is started");
 
+        if (userRepository.count() > 0 && hotelRepository.count() > 0
+                && roomRepository.count() > 0 && reservationRepository.count() > 0) {
+            log.info("Dev listener was skipped");
+            return;
+        }
+
+        log.info("Dev listener was launched");
+
         clearDatabase();
 
-        UploadObject uploadObject = IOUtils.readValues(mockHotelPath);
+        UploadObject uploadObject = IOUtils.readValues(mockData);
 
         List<Hotel> savedHotels = hotelRepository.saveAllAndFlush(uploadObject.getHotels());
 
@@ -83,16 +92,16 @@ public class DevUploader {
 
         List<User> savedUsers = userRepository.saveAll(generateUsers(100));
 
-//        generateReservations(1_500, savedRooms, uploadObject.getDates()).forEach(
-//                reservation -> {
-//                    Collections.shuffle(savedUsers);
-//                    try {
-//                        reservationService.booking(reservation, savedUsers.get(0).getUsername());
-//                    } catch (RoomBookingException e) {
-//                        log.error(e.getMessage());
-//                    }
-//                }
-//        );
+        generateReservations(1_500, savedRooms, uploadObject.getDates()).forEach(
+                reservation -> {
+                    Collections.shuffle(savedUsers);
+                    try {
+                        reservationService.booking(reservation, savedUsers.get(0).getUsername());
+                    } catch (RoomBookingException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+        );
         log.info("Was saved: users - {}, hotels - {}, rooms - {}, reservations - {}",
                 savedUsers.size(),
                 savedHotels.size(),

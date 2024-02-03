@@ -12,9 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.example.booking.dto.defaults.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import ru.example.booking.dao.postrgres.RoleType;
+import ru.example.booking.dto.defaults.ErrorResponse;
 import ru.example.booking.dto.user.CreateUserRequest;
 import ru.example.booking.dto.user.UpdateUserRequest;
 import ru.example.booking.dto.user.UserResponse;
@@ -169,7 +169,8 @@ public class UserController {
 
     @Operation(
             summary = "Update existed user",
-            description = "To update information about existed user (user with role 'USER' can update information about himself)",
+            description = "To update information about existed user " +
+                    "(user with role 'USER' can update information about himself)",
             security = @SecurityRequirement(name = "ADMIN, USER"),
             tags = {"user", "PUT"}
     )
