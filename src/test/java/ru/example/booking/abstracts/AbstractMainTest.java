@@ -138,7 +138,7 @@ public class AbstractMainTest {
     @Container
     static final KafkaContainer kafkaContainer = new KafkaContainer(
         DockerImageName.parse("confluentinc/cp-kafka:7.3.3")
-    );
+    ).withReuse(true);
 
     @DynamicPropertySource
     public static void register(DynamicPropertyRegistry registry) {

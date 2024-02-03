@@ -48,12 +48,9 @@ public class UserService {
     }
 
     public UserResponse save(RoleType role, CreateUserRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new EntityAlreadyExists("User with username \"" + request.getUsername() + "\" is already exists");
-        }
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new EntityAlreadyExists("User with email \"" + request.getEmail() + "\" is already exists");
-        }
+
+        validateUsernameEmail(request.getUsername(), request.getEmail());
+
         var userForSaving = userMapper.createRequestToUser(request);
         userForSaving.setRoles(Set.of(role));
         userForSaving.setPassword(passwordEncoder.encode(userForSaving.getPassword()));
@@ -65,6 +62,9 @@ public class UserService {
     }
 
     public UserResponse update(Long id, UpdateUserRequest request, String username) {
+
+        validateUsernameEmail(request.getUsername(), request.getEmail());
+
         var existedUser = findByIdWithoutPrivilegeValidation(id);
 
         validationService.isValidAction(findByUsernameWithoutPrivilegeValidation(username), existedUser);
@@ -106,6 +106,15 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("User not found, ID is " + id)
         );
+    }
+
+    private void validateUsernameEmail(String username, String email) {
+        if (userRepository.existsByUsername(username)) {
+            throw new EntityAlreadyExists("User with username \"" + username + "\" is already exists");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new EntityAlreadyExists("User with email \"" + email + "\" is already exists");
+        }
     }
 
 }

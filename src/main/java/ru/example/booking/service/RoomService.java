@@ -89,6 +89,8 @@ public class RoomService {
             throw new EntityNotFoundException("Room not found, ID is " + id);
         }
 
+        validateRoomName(request.getName());
+
         Room existedRoom = findRoomById(id);
         Room updatedRoom = roomMapper.requestToRoom(request);
         BeanUtils.copyNonNullProperties(updatedRoom, existedRoom);
@@ -101,9 +103,7 @@ public class RoomService {
             @CacheEvict(value = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, allEntries = true)
     })
     public SimpleRoomResponse save(UpsertRoomRequest request) {
-        if (roomRepository.existsByName(request.getName())) {
-            throw new EntityAlreadyExists("Room with name \"" + request.getName() + "\" is already exists");
-        }
+        validateRoomName(request.getName());
 
         var room = roomMapper.requestToRoom(request);
         hotelService.addRoom(room);
@@ -211,5 +211,11 @@ public class RoomService {
             return Map.of(false, "Date \"from\" is in the past");
         }
         return Map.of(true, "OK");
+    }
+
+    private void validateRoomName(String name) {
+        if (roomRepository.existsByName(name)) {
+            throw new EntityAlreadyExists("Room with name \"" + name + "\" is already exists");
+        }
     }
 }
