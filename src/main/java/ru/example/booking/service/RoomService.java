@@ -52,8 +52,6 @@ public class RoomService {
     @Cacheable(cacheNames = CacheProperties.CacheNames.ALL_ROOMS_WITH_FILTER, key = "#settings")
     public RoomResponseList findAll(FindAllSettings settings) {
 
-        log.info("Method findAll with filter was called");
-
         if (settings.getRoomFilter().getCheckInDate() != null && settings.getRoomFilter().getCheckOutDate() != null) {
             settings.getRoomFilter().setCheckInLocalDate(LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckInDate(), datePattern));
             settings.getRoomFilter().setCheckOutLocalDate(LocalDatesUtil.strDateToLocalDate(settings.getRoomFilter().getCheckOutDate(), datePattern));
