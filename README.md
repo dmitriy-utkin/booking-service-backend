@@ -121,7 +121,7 @@ This application has the following controllers and endpoints:
    4. POST: `/api/hotel` -> ADMIN
    5. PUT: `/api/hotel/{id}` -> ADMIN
    6. DELETE: `/api/hotel/{id}` -> ADMIN
-   7. PUT: : `/api/hotel/rate/{id}` -> ADMIN
+   7. PUT: : `/api/hotel/rate/{id}` -> All users with authorization
 4) Room controller:
    1. GET: `/api/room` -> All users with authorization
    2. GET: `/api/room/filter` -> All users with authorization
