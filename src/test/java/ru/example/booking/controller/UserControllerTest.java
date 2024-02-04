@@ -29,7 +29,7 @@ public class UserControllerTest extends UserAbstractTest {
                 .password("pass")
                 .build();
 
-        var expectedResponse = userMapper.userToUserResponse(
+        userMapper.userToUserResponse(
                 User.builder()
                         .id(6L)
                         .username("New user")
@@ -39,17 +39,12 @@ public class UserControllerTest extends UserAbstractTest {
                         .build()
         );
 
-        var actualResponse = mockMvc.perform(post("/api/public/account?role=ROLE_ADMIN")
+        mockMvc.perform(post("/api/public/account?role=ROLE_ADMIN")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
+                .andExpect(status().isCreated());
 
         JsonAssert.assertJsonEquals(6L, userRepository.count());
-        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 
     @Test

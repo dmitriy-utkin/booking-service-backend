@@ -90,9 +90,6 @@ public class AbstractMainTest {
     @Autowired
     protected MockMvc mockMvc;
 
-//    @Autowired
-//    protected WebApplicationContext context;
-
     @Autowired
     protected HotelMapper hotelMapper;
 
@@ -124,7 +121,7 @@ public class AbstractMainTest {
     protected StatisticReservationRepository statisticReservationRepository;
 
     @Container
-    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.8")
+    protected static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.8")
             .withReuse(true);
 
     protected static PostgreSQLContainer postgreSQLContainer;
@@ -136,9 +133,9 @@ public class AbstractMainTest {
     }
 
     @Container
-    static final KafkaContainer kafkaContainer = new KafkaContainer(
+    protected static final KafkaContainer kafkaContainer = new KafkaContainer(
         DockerImageName.parse("confluentinc/cp-kafka:7.3.3")
-    ).withReuse(true);
+    ).withReuse(true).withEmbeddedZookeeper();
 
     @DynamicPropertySource
     public static void register(DynamicPropertyRegistry registry) {

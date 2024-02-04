@@ -6,3 +6,9 @@ spring:
       schema: booking_schema
       connection-timeout: 10000
       connection-init-sql: CREATE SCHEMA IF NOT EXISTS booking_schema
+
+app:
+  kafka:
+    kafkaGroupId: "kafka-booking-group-id"
+    userTopic: "user-service-topic"
+    reservationTopic: "reservation-service-topic"

@@ -10,6 +10,4 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    //TODO: описать данное приложение в docker, чтобы потом запускать его в виде контейнера
-
 }
