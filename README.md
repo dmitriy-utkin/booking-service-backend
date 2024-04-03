@@ -1,4 +1,4 @@
-# SPRING COURSE FINAL PROJECT: BOOKING SYSTEM
+# BOOKING SYSTEM
 
 ![Static Badge](https://img.shields.io/badge/Spring-data-green)
 ![Static Badge](https://img.shields.io/badge/Postre-SQL-blue)
@@ -30,7 +30,7 @@ rooms, users and reservation. Here was implemented a mvc pattern, was created a 
 
 So lets look at the backend part of booking-system a little more details.
 
-## How launch this application?
+## How to launch this application?
 
 1) First of all you need to clone this repository to your local machine
 2) Then you need to launch Docker application
